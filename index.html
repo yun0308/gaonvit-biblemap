@@ -56,6 +56,7 @@ body{
   line-height:1.6;
   font-size:17px;
   padding-bottom:env(safe-area-inset-bottom);
+  overscroll-behavior-y:contain;
 }
 button,input{font-family:inherit;font-size:inherit;color:inherit}
 button{cursor:pointer;border:none;background:none}
@@ -64,7 +65,7 @@ button{cursor:pointer;border:none;background:none}
 .wrap{max-width:760px;margin:0 auto;padding:0 18px}
 
 /* ===== 로그인 ===== */
-#login{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:36px 18px 52px;background:var(--cream)}
+#login{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:calc(36px + env(safe-area-inset-top)) 18px calc(52px + env(safe-area-inset-bottom));background:var(--cream)}
 .login-card{max-width:440px;width:100%;margin:0 auto}
 
 .brand{text-align:center;margin-bottom:40px}
@@ -303,7 +304,7 @@ body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(-
 
 /* ===== 토스트 ===== */
 #toast{
-  position:fixed;left:50%;bottom:28px;transform:translate(-50%,90px);
+  position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,90px);
   background:var(--navy);color:var(--cream);
   padding:13px 22px;border-radius:22px;font-size:14.5px;font-weight:600;
   z-index:100;transition:transform .28s cubic-bezier(.2,.9,.3,1.2);
