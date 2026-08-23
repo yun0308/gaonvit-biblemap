@@ -137,19 +137,21 @@ button{cursor:pointer;border:none;background:none}
   padding:calc(16px + env(safe-area-inset-top)) 16px 44px;text-align:center;position:relative;
 }
 .header-toolbar{
-  display:flex;justify-content:flex-start;align-items:center;margin-bottom:20px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:20px;
 }
-.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
-.header-actions .sep{color:rgba(232,217,181,.35);font-size:12px}
+.header-actions{
+  display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:nowrap;
+}
+.header-actions .sep{color:rgba(232,217,181,.35);font-size:12px;flex:none}
 .map-header .logout, .map-header .action-btn{
   padding:10px 6px;border:none;background:transparent;
   font-size:13px;font-weight:600;color:var(--gold-soft,#E8D9B5);
-  text-decoration:none;display:inline-block;opacity:.9;
+  text-decoration:none;display:inline-block;opacity:.9;white-space:nowrap;
 }
 .map-header .logout:active, .map-header .action-btn:active{opacity:.6}
 .sync-status{
-  display:flex;align-items:center;justify-content:flex-start;gap:6px;
-  font-size:11px;font-weight:600;color:#9AA6BE;flex:none;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:11px;font-weight:600;color:#9AA6BE;
 }
 .sync-status .dot{width:6px;height:6px;border-radius:50%;background:#9AA6BE;flex:none}
 .sync-status[data-st="syncing"]{color:var(--gold-soft,#E8D9B5)}
@@ -378,9 +380,6 @@ body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(-
 <section id="map">
   <header class="map-header">
     <div class="header-toolbar">
-      <span class="sync-status" id="sync-status" data-st="idle" style="display:none">
-        <i class="dot"></i><span id="sync-status-text">저장됨</span>
-      </span>
       <div class="header-actions">
         <button class="action-btn" id="btn-switch-testament">구약 바로가기</button>
         <span class="sep">·</span>
@@ -388,6 +387,9 @@ body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(-
         <span class="sep">·</span>
         <button class="logout" id="btn-logout">처음화면으로</button>
       </div>
+      <span class="sync-status" id="sync-status" data-st="idle" style="display:none">
+        <i class="dot"></i><span id="sync-status-text">저장됨</span>
+      </span>
     </div>
 
     <div class="eyebrow" id="who-eyebrow">가온빛교회</div>
