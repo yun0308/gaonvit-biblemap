@@ -222,7 +222,7 @@ button{cursor:pointer;border:none;background:none}
   padding:14px 15px 15px;margin-bottom:10px;
   border:1px solid var(--line);
 }
-.book.collapsed{padding-bottom:10px}
+.book.collapsed{padding-bottom:14px}
 .book-head{
   display:flex;justify-content:space-between;align-items:center;
   gap:10px;margin-bottom:10px;
@@ -253,7 +253,8 @@ button{cursor:pointer;border:none;background:none}
 .collapse-btn svg{transition:transform .2s}
 .book.collapsed .collapse-btn svg{transform:rotate(-90deg)}
 .book.collapsed .grid,
-.book.collapsed .sermons{display:none}
+.book.collapsed .sermons,
+.book.collapsed .book-bar{display:none}
 
 .grid{display:flex;flex-wrap:wrap;gap:5px}
 .ch{
@@ -281,7 +282,6 @@ body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(-
 .ch[data-s]:not([data-s=""]).has-sermon::after{background:var(--cream);border:1px solid var(--navy)}
 
 .book-bar{height:4px;background:#EDE7D8;border-radius:2px;margin-top:11px;overflow:hidden;display:flex}
-.book.collapsed .book-bar{margin-top:8px}
 .book-bar i{display:block;height:100%}
 .book-bar .b-read{background:var(--navy)}
 .book-bar .b-write{background:var(--gold)}
