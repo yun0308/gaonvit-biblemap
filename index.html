@@ -150,8 +150,12 @@ button{cursor:pointer;border:none;background:none}
 }
 .map-header .logout:active, .map-header .action-btn:active{opacity:.6}
 .sync-status{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  font-size:11px;font-weight:600;color:#9AA6BE;
+  position:fixed;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:50;
+  display:flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:600;color:#CBD3E3;
+  background:rgba(27,42,74,.92);padding:7px 12px;border-radius:20px;
+  box-shadow:0 3px 10px rgba(0,0,0,.18);
+  backdrop-filter:blur(4px);
 }
 .sync-status .dot{width:6px;height:6px;border-radius:50%;background:#9AA6BE;flex:none}
 .sync-status[data-st="syncing"]{color:var(--gold-soft,#E8D9B5)}
@@ -378,6 +382,9 @@ body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(-
 
 <!-- ========== 지도 ========== -->
 <section id="map">
+  <span class="sync-status" id="sync-status" data-st="idle" style="display:none">
+    <i class="dot"></i><span id="sync-status-text">저장됨</span>
+  </span>
   <header class="map-header">
     <div class="header-toolbar">
       <div class="header-actions">
@@ -387,9 +394,6 @@ body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(-
         <span class="sep">·</span>
         <button class="logout" id="btn-logout">처음화면으로</button>
       </div>
-      <span class="sync-status" id="sync-status" data-st="idle" style="display:none">
-        <i class="dot"></i><span id="sync-status-text">저장됨</span>
-      </span>
     </div>
 
     <div class="eyebrow" id="who-eyebrow">가온빛교회</div>
