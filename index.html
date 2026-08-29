@@ -583,6 +583,7 @@ function pickSeg(id, val){
       S.birth = v.birthDate;
       S.guest = false;
       S.progress = {};
+      loadCollapsed();
       enterMap();
     }
   }catch(e){}
@@ -611,6 +612,7 @@ $('#btn-start').addEventListener('click', async ()=>{
   S.birth = birth;
   S.guest = !name;
   S.progress = {};
+  loadCollapsed();
 
   saveSession(true);
 
@@ -763,6 +765,20 @@ async function loadSermons(){
    ============================================================ */
 function localKey(){
   return 'gaonbit_progress_' + S.name + '_' + S.birth + '_' + S.testament;
+}
+
+/* 접어둔 책 목록 - 사람별로 기억(성경 종류 구분 없이 책 id 자체가 겹치지 않아 하나로 통합 관리) */
+function collapsedKey(){
+  return 'gaonbit_collapsed_' + S.name + '_' + S.birth;
+}
+function saveCollapsed(){
+  if(S.guest) return;
+  try{ localStorage.setItem(collapsedKey(), JSON.stringify([...S.collapsed])); }catch(e){}
+}
+function loadCollapsed(){
+  if(S.guest){ S.collapsed = new Set(); return; }
+  try{ S.collapsed = new Set(JSON.parse(localStorage.getItem(collapsedKey())||'[]')); }
+  catch(e){ S.collapsed = new Set(); }
 }
 
 /* 서버에서 받은 최신 진도로 교체하되, 아직 서버에 전송 안 된(디바운스 대기중인) 로컬 클릭은
@@ -1056,6 +1072,7 @@ $('#books').addEventListener('click', async e=>{
     article.classList.toggle('collapsed', nowCollapsed);
     collapseBtn.setAttribute('aria-expanded', String(!nowCollapsed));
     if(nowCollapsed) S.collapsed.add(bid); else S.collapsed.delete(bid);
+    saveCollapsed();
     return;
   }
 
