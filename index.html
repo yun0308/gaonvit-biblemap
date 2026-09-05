@@ -772,7 +772,7 @@ function localKey(){
 
 /* 접어둔 책 목록 - 사람별로 기억(성경 종류 구분 없이 책 id 자체가 겹치지 않아 하나로 통합 관리) */
 function collapsedKey(){
-  return 'gaonbit_collapsed_' + S.name + '_' + S.birth;
+  return 'gaonbit_collapsed_' + S.name + '_' + S.birth + '_' + S.mode;
 }
 function saveCollapsed(){
   if(S.guest) return;
