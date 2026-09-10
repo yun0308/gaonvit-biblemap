@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>가온빛 성경퀴즈 암기카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1F2438;
+    --bg-deep: #171B2C;
+    --paper: #F4EEDB;
+    --paper-edge: #E4DABF;
+    --ink: #2E2618;
+    --ink-soft: #6B5F45;
+    --gold: #C9A227;
+    --gold-bright: #E0BD4A;
+    --wine: #8B2635;
+    --wine-bright: #B33A4C;
+    --cream: #EFE7D2;
+    --cream-dim: #B9AF98;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(circle at 50% -10%, #2A3153 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    color: var(--cream);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    padding: 0;
+  }
+  .app{
+    width:100%;
+    max-width: 480px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding: 22px 18px 34px;
+    position:relative;
+  }
+
+  /* ---------- Header ---------- */
+  .app-title{
+    font-family:'Noto Serif KR', serif;
+    font-weight:700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--gold-bright);
+    margin: 4px 0 2px;
+  }
+  .app-sub{
+    font-size: 13px;
+    color: var(--cream-dim);
+    margin-bottom: 22px;
+  }
+
+  /* ---------- Screens ---------- */
+  .screen{ display:none; flex-direction:column; flex:1; }
+  .screen.active{ display:flex; }
+
+  /* ---------- Home: book tabs ---------- */
+  .tabs{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom: 22px;
+  }
+  .tab{
+    position:relative;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px 14px 14px 4px;
+    padding: 14px 16px 14px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    border:none;
+    text-align:left;
+    font-family:'Noto Sans KR', sans-serif;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.25), 0 6px 14px rgba(0,0,0,0.25);
+    transition: transform .12s ease;
+  }
+  .tab:active{ transform: translateX(2px) scale(0.99); }
+  .tab::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:6px;
+    background: var(--tab-color, var(--gold));
+    border-radius: 4px 0 0 4px;
+  }
+  .tab-name{
+    font-weight:700;
+    font-size:16px;
+  }
+  .tab-count{
+    font-size:12px;
+    color: var(--ink-soft);
+    margin-top:2px;
+  }
+  .tab-badge{
+    font-family:'Noto Serif KR', serif;
+    font-weight:700;
+    font-size:18px;
+    color: var(--tab-color, var(--gold));
+    min-width:52px;
+    text-align:right;
+  }
+
+  .section-label{
+    font-size:12px;
+    color: var(--cream-dim);
+    margin: 6px 2px 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .mode-row{
+    display:flex;
+    gap:10px;
+    margin-bottom: 10px;
+  }
+  .mode-btn{
+    flex:1;
+    background: rgba(244,238,219,0.06);
+    border: 1px solid rgba(244,238,219,0.18);
+    color: var(--cream);
+    border-radius: 12px;
+    padding: 12px 8px;
+    font-size: 13px;
+    font-family:'Noto Sans KR', sans-serif;
+    cursor:pointer;
+    text-align:center;
+  }
+  .mode-btn.selected{
+    background: var(--gold);
+    color: #2A2308;
+    border-color: var(--gold);
+    font-weight:700;
+  }
+  .mode-btn:disabled{
+    opacity: 0.35;
+  }
+
+  .start-btn{
+    margin-top: 14px;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: #2A2308;
+    border:none;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight:700;
+    font-family:'Noto Sans KR', sans-serif;
+    cursor:pointer;
+    box-shadow: 0 4px 14px rgba(201,162,39,0.35);
+  }
+  .start-btn:active{ transform: scale(0.98); }
+
+  .reset-link{
+    margin-top: 18px;
+    text-align:center;
+    font-size: 12px;
+    color: var(--cream-dim);
+    text-decoration: underline;
+    cursor:pointer;
+  }
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 14px;
+  }
+  .back-btn{
+    background:none;
+    border:none;
+    color: var(--cream-dim);
+    font-size: 14px;
+    cursor:pointer;
+    padding: 6px 0;
+  }
+  .quiz-label{
+    font-size: 13px;
+    color: var(--gold-bright);
+    font-weight:700;
+  }
+
+  .progress-track{
+    height:6px;
+    background: rgba(244,238,219,0.12);
+    border-radius: 4px;
+    overflow:hidden;
+    margin-bottom: 6px;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+    width:0%;
+    transition: width .25s ease;
+  }
+  .progress-text{
+    font-size:12px;
+    color: var(--cream-dim);
+    margin-bottom: 18px;
+  }
+
+  .card-wrap{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    perspective: 1200px;
+  }
+  .card{
+    position:relative;
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 30px 24px;
+    min-height: 260px;
+    display:flex;
+    flex-direction:column;
+    box-shadow: 0 10px 0 var(--paper-edge), 0 18px 30px rgba(0,0,0,0.35);
+    cursor:pointer;
+  }
+  .card-ref{
+    font-family:'Noto Serif KR', serif;
+    font-weight:700;
+    font-size: 13px;
+    color: var(--wine);
+    letter-spacing:0.02em;
+    margin-bottom: 14px;
+  }
+  .card-q{
+    font-family:'Noto Serif KR', serif;
+    font-size: 18px;
+    line-height:1.6;
+    color: var(--ink);
+    font-weight:500;
+  }
+  .card-hint{
+    margin-top:auto;
+    padding-top: 20px;
+    text-align:center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--paper-edge);
+  }
+  .card-answer{
+    display:none;
+    margin-top:18px;
+    padding-top:18px;
+    border-top: 1px dashed var(--paper-edge);
+  }
+  .card-answer.show{ display:block; }
+  .card-a-label{
+    font-size:12px;
+    color: var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .card-a-text{
+    font-family:'Noto Serif KR', serif;
+    font-size: 17px;
+    font-weight:700;
+    color: var(--wine);
+    line-height:1.5;
+  }
+
+  .answer-buttons{
+    display:none;
+    gap:12px;
+    margin-top: 18px;
+  }
+  .answer-buttons.show{ display:flex; }
+  .ans-btn{
+    flex:1;
+    border:none;
+    border-radius: 14px;
+    padding: 15px 8px;
+    font-size: 15px;
+    font-weight:700;
+    font-family:'Noto Sans KR', sans-serif;
+    cursor:pointer;
+  }
+  .ans-wrong{
+    background: rgba(139,38,53,0.18);
+    color: var(--wine-bright);
+    border: 1px solid rgba(179,58,76,0.5);
+  }
+  .ans-correct{
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color: #2A2308;
+  }
+  .ans-btn:active{ transform: scale(0.97); }
+
+  .reveal-btn{
+    margin-top: 18px;
+    background: rgba(244,238,219,0.08);
+    border: 1px solid rgba(244,238,219,0.25);
+    color: var(--cream);
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 15px;
+    font-family:'Noto Sans KR', sans-serif;
+    cursor:pointer;
+  }
+
+  /* ---------- Summary screen ---------- */
+  .summary-wrap{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+  }
+  .summary-title{
+    font-family:'Noto Serif KR', serif;
+    font-size: 24px;
+    font-weight:700;
+    color: var(--gold-bright);
+    margin-bottom: 8px;
+  }
+  .summary-stats{
+    display:flex;
+    gap: 24px;
+    margin: 20px 0 30px;
+  }
+  .stat{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .stat-num{
+    font-family:'Noto Serif KR', serif;
+    font-size: 30px;
+    font-weight:700;
+  }
+  .stat-correct .stat-num{ color: var(--gold-bright); }
+  .stat-wrong .stat-num{ color: var(--wine-bright); }
+  .stat-label{
+    font-size:12px;
+    color: var(--cream-dim);
+    margin-top:4px;
+  }
+  .summary-actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+  }
+
+  .loading{
+    text-align:center;
+    color: var(--cream-dim);
+    font-size:13px;
+    padding: 40px 0;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="app-title">가온빛 성경퀴즈 암기카드</div>
+  <div class="app-sub">2026년 제2회 가온빛 성경 퀴즈대회 · 누가복음 70 · 야고보서 15 · 빌립보서 15</div>
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div id="loading" class="loading">진행 상황 불러오는 중…</div>
+    <div id="home-content" style="display:none;">
+      <div class="section-label">성경 선택</div>
+      <div class="tabs" id="book-tabs"></div>
+
+      <div class="section-label">학습 방식</div>
+      <div class="mode-row">
+        <button class="mode-btn selected" data-mode="order">순서대로</button>
+        <button class="mode-btn" data-mode="random">랜덤</button>
+        <button class="mode-btn" data-mode="wrong" id="wrong-mode-btn" disabled>오답만 복습</button>
+      </div>
+
+      <button class="start-btn" id="start-btn">학습 시작</button>
+      <div class="reset-link" id="reset-link">전체 학습 기록 초기화</div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="quiz-top">
+      <button class="back-btn" id="quit-btn">← 처음으로</button>
+      <div class="quiz-label" id="quiz-label"></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-text" id="progress-text"></div>
+
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <div class="card-ref" id="card-ref"></div>
+        <div class="card-q" id="card-q"></div>
+        <div class="card-hint" id="card-hint">탭하여 정답 확인</div>
+        <div class="card-answer" id="card-answer">
+          <div class="card-a-label">정답</div>
+          <div class="card-a-text" id="card-a-text"></div>
+        </div>
+      </div>
+      <div class="answer-buttons" id="answer-buttons">
+        <button class="ans-btn ans-wrong" id="mark-wrong">틀렸어요</button>
+        <button class="ans-btn ans-correct" id="mark-correct">맞았어요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div id="screen-summary" class="screen">
+    <div class="summary-wrap">
+      <div class="summary-title">학습 완료</div>
+      <div style="color:var(--cream-dim); font-size:14px;" id="summary-sub"></div>
+      <div class="summary-stats">
+        <div class="stat stat-correct"><div class="stat-num" id="sum-correct">0</div><div class="stat-label">맞음</div></div>
+        <div class="stat stat-wrong"><div class="stat-num" id="sum-wrong">0</div><div class="stat-label">틀림</div></div>
+      </div>
+      <div class="summary-actions">
+        <button class="start-btn" id="retry-wrong-btn">틀린 문제만 다시 풀기</button>
+        <button class="mode-btn" id="home-btn" style="padding:15px;">처음으로</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---------------- DATA ----------------
+const DATA = [
+{b:"누가복음",n:1,ref:"1:26-27",q:`마리아에게 예수님의 잉태 소식을 전해준 천사의 이름은 무엇인가요?`,a:`가브리엘`},
+{b:"누가복음",n:2,ref:"2:8-10",q:`예수님이 탄생하셨을 때 들판에서 밤에 양 떼를 지키다가 천사로부터 구주 탄생의 기쁜 소식을 가장 먼저 들은 사람들은 누구인가요?`,a:`목자들`},
+{b:"누가복음",n:3,ref:"2:7",q:`아기 예수님이 탄생하신 후 강보에 싸여 뉘었던 장소는 어디인가요?`,a:`구유`},
+{b:"누가복음",n:4,ref:"2:46",q:`12세 예수님이 유월절을 지킨 후 부모와 떨어져 선생들과 대화하며 머무셨던 곳은 어디인가요?`,a:`성전`},
+{b:"누가복음",n:5,ref:"3:3",q:`세례 요한이 요단강 부근에서 백성들에게 전파한 세례는 무슨 세례인가요?`,a:`죄 사함을 받게 하는 회개의 세례`},
+{b:"누가복음",n:6,ref:"4:1,2",q:`예수님이 광야에서 마귀에게 시험을 받으실 때 며칠 동안 금식하셨나요?`,a:`40일`},
+{b:"누가복음",n:7,ref:"5:4",q:`갈릴리 호수에서 밤새 고기를 잡지 못한 베드로에게 예수님이 그물을 내리라고 명하신 곳은 어디인가요?`,a:`깊은 데`},
+{b:"누가복음",n:8,ref:"5:27",q:`세관에 앉아 있다가 예수님의 부르심을 받고 곧바로 모든 것을 버리고 따랐던 세리의 이름은 무엇인가요?`,a:`레위`},
+{b:"누가복음",n:9,ref:"6:13",q:`예수님이 밤이 맞도록 기도하신 후 세우신 사도(제자)는 총 몇 명인가요?`,a:`12명`},
+{b:"누가복음",n:10,ref:"6:31",q:`"남에게 대접을 받고자 하는 대로 너희도 남을 ( ○○ )하라" 빈칸은?`,a:`대접`},
+{b:"누가복음",n:11,ref:"7:2,7",q:`가버나움에서 예수님께 "말씀만 하사 내 하인을 낫게 하소서"라고 간구했던 로마 군인의 직책은 무엇인가요?`,a:`백부장`},
+{b:"누가복음",n:12,ref:"7:50",q:`예수님이 눈물로 발을 적시고 향유를 부은 여인에게 "네 ( ○○ )이 너를 구원하였으니 평안히 가라"고 하셨습니다. 빈칸은?`,a:`믿음`},
+{b:"누가복음",n:13,ref:"9:14",q:`벳새다 들판에서 떡 다섯 개와 물고기 두 마리로 먹이신 사람의 수는 성인 남자 기준 몇 명인가요?`,a:`오천명`},
+{b:"누가복음",n:14,ref:"9:20",q:`"너희는 나를 누구라 하느냐"는 질문에 베드로가 고백한 대답은 무엇인가요?`,a:`하나님의 그리스도`},
+{b:"누가복음",n:15,ref:"10:33",q:`강도 만난 자를 보고 그냥 지나치지 않고 끝까지 돌보아 준 사람은 어느 지역 사람이었나요?`,a:`사마리아 사람`},
+{b:"누가복음",n:16,ref:"10:39,42",q:`예수님이 오셨을 때 발치에 앉아 말씀을 듣는 좋은 편을 택했던 마르다의 여동생 이름은?`,a:`마리아`},
+{b:"누가복음",n:17,ref:"11:1-4",q:`제자들의 요청으로 예수님이 직접 가르쳐 주신 기도는 무엇인가요?`,a:`주기도문(주의 기도)`},
+{b:"누가복음",n:18,ref:"11:9",q:`"구하라 그러면 너희에게 주실 것이요 ( ○○○ ) 그러면 찾아낼 것이요" 빈칸은?`,a:`찾으라`},
+{b:"누가복음",n:19,ref:"12:16-21",q:`풍년이 들자 곡식 창고만 크게 짓다가 그날 밤 목숨을 잃은 사람의 비유는 무엇인가요?`,a:`어리석은 부자 비유`},
+{b:"누가복음",n:20,ref:"15:8",q:`누가복음 15장에서 한 여인이 등불을 켜고 집을 쓸며 열심히 찾았던 은전의 명칭은 무엇인가요?`,a:`드라크마`},
+{b:"누가복음",n:21,ref:"15:16",q:`집을 나가 재산을 탕진한 둘째 아들이 극심한 흉년 중에 돼지를 치며 배를 채우고자 먹었던 열매는 무엇인가요?`,a:`쥐엄 열매`},
+{b:"누가복음",n:22,ref:"16:20",q:`부자의 집 문앞에 누워 헌데를 앓으며 부자의 상에서 떨어지는 것으로 배를 채우려 했던 거지의 이름은?`,a:`나사로`},
+{b:"누가복음",n:23,ref:"17:17",q:`나병 환자 10명이 깨끗함을 받았으나, 돌아와 하나님께 영광을 돌리며 감사한 사람은 몇 명이었나요?`,a:`1인`},
+{b:"누가복음",n:24,ref:"18:17",q:`예수님이 "누구든지 하나님의 나라를 ( ○○○○ )와 같이 받아들이지 않는 자는 결단코 들어가지 못하리라" 하셨습니다. 빈칸은?`,a:`어린아이`},
+{b:"누가복음",n:25,ref:"19:2-4",q:`여리고의 세리장으로, 키가 작아 돌무화과나무 위로 올라가 예수님을 만난 사람은 누구인가요?`,a:`삭개오`},
+{b:"누가복음",n:26,ref:"19:35",q:`예수님이 호산나 찬송을 받으시며 예루살렘 성에 입성하실 때 타셨던 동물은 무엇인가요?`,a:`나귀 새끼`},
+{b:"누가복음",n:27,ref:"21:4",q:`가난한 과부가 헌금함에 넣었던 두 렙돈은 자신의 생활비 중 얼마에 해당했나요?`,a:`전부`},
+{b:"누가복음",n:28,ref:"22:3-5",q:`은을 받고 대제사장들에게 예수님을 넘겨준 배신자 제자의 이름은 누구인가요?`,a:`가룟 유다`},
+{b:"누가복음",n:29,ref:"22:61-62",q:`닭이 울기 전 예수님을 세 번 부인하고 밖에 나가 심히 통곡한 제자는 누구인가요?`,a:`베드로`},
+{b:"누가복음",n:30,ref:"23:33",q:`군인들이 예수님과 두 행악자를 십자가에 못 박은 장소의 이름은 무엇인가요?`,a:`해골`},
+{b:"누가복음",n:31,ref:"1:3",q:`누가복음의 수신자로, 누가가 "차례대로 써 보내는 것이 좋은 줄 알았노라"며 칭한 인물은 누구인가요?`,a:`데오빌로 각하`},
+{b:"누가복음",n:32,ref:"1:20",q:`세례 요한의 아버지 사가랴는 천사의 말을 믿지 못하여 아이가 태어날 때까지 어떤 징계를 받았나요?`,a:`말을 못하게 됨`},
+{b:"누가복음",n:33,ref:"2:25,28",q:`성전에서 아기 예수님을 안고 "내 눈이 주의 구원을 보았사오니"라고 찬송했던 의로운 노인의 이름은?`,a:`시므온`},
+{b:"누가복음",n:34,ref:"3:16",q:`세례 요한은 백성들에게 "나는 물로 세례를 베풀거니와... 그는 ( ○○ )과 ( ○ )으로 너희에게 세례를 베푸실 것이요"라고 했나요?`,a:`성령, 불`},
+{b:"누가복음",n:35,ref:"4:17",q:`예수님이 고향 나사렛 회당에서 안식일에 펼쳐 읽으신 구약 선지자의 두루마리 성경은 무엇인가요?`,a:`이사야`},
+{b:"누가복음",n:36,ref:"5:19",q:`중풍병자를 메고 온 친구들이 예수님께 다가가기 위해 뜯어낸 집의 부위는 어디인가요?`,a:`지붕(기와)`},
+{b:"누가복음",n:37,ref:"5:38",q:`"새 포도주는 ( ○ ○○ )에 넣어야 할 것이니라" 빈칸에 들어갈 말은?`,a:`새 부대`},
+{b:"누가복음",n:38,ref:"6:5",q:`안식일에 제자들이 이삭을 잘라 먹은 사건 후 예수님은 자신이 무엇의 주인이라고 밝히셨나요?`,a:`안식일의 주인`},
+{b:"누가복음",n:39,ref:"7:14",q:`나인 성 과부의 유일한 아들이 죽어 상여가 나갈 때, 예수님이 관에 손을 대시며 하신 말씀은 무엇인가요?`,a:`"청년아 내가 네게 말하노니 일어나라"`},
+{b:"누가복음",n:40,ref:"8:5-7",q:`씨 뿌리는 자의 비유에서 결실하지 못하는 세 가지 땅의 형태는 길가, 바위(돌짝밭), 그리고 어디인가요?`,a:`가시떨기`},
+{b:"누가복음",n:41,ref:"8:32-33",q:`거라사인의 땅에서 군대 귀신 들렸던 자에게서 나온 귀신들은 어떤 가축 떼로 들어가 몰사했나요?`,a:`돼지 떼`},
+{b:"누가복음",n:42,ref:"8:44",q:`12년 동안 혈루증으로 앓던 여인이 치유를 경험한 행동은 무엇이었나요?`,a:`예수님의 옷 가를 만짐`},
+{b:"누가복음",n:43,ref:"9:30-31",q:`변화산에서 영광 중에 나타나 예수님의 십자가 별세에 대해 함께 대화한 구약의 두 인물은 누구인가요?`,a:`모세, 엘리야`},
+{b:"누가복음",n:44,ref:"10:1",q:`예수님이 열두 제자 외에 둘씩 짝지어 각 동네로 앞서 보내신 전도대의 인원수는 몇 명인가요?`,a:`70인`},
+{b:"누가복음",n:45,ref:"11:13",q:`하늘에 계신 아버지께서 구하는 자녀에게 좋은 것으로 주시겠다고 약속하신 것은 무엇인가요?`,a:`성령`},
+{b:"누가복음",n:46,ref:"13:14",q:`예수님이 18년 동안 귀신 들려 허리가 꼬부라져 펴지 못하던 여자를 고쳐주신 요일은 무슨 날이었나요?`,a:`안식일`},
+{b:"누가복음",n:47,ref:"14:18-20",q:`큰 잔치 비유에서 청함을 받은 사람들이 잔치에 갈 수 없다고 핑계 댄 세 가지 사유는 무엇인가요?`,a:`밭을 샀음, 소 다섯 겨리를 샀음, 장가들었음`},
+{b:"누가복음",n:48,ref:"15:23",q:`돌아온 탕자(둘째 아들)를 위해 아버지가 잔치를 열며 잡아준 짐승은 무엇인가요?`,a:`살진 송아지`},
+{b:"누가복음",n:49,ref:"16:13",q:`불의한 청지기 비유의 결론으로 "너희는 하나님과 ( ○○ )을 겸하여 섬길 수 없느니라"고 하셨습니다. 빈칸은?`,a:`재물`},
+{b:"누가복음",n:50,ref:"18:1",q:`불의한 재판관 비유를 통해 예수님이 강조하신 기도의 핵심 태도는 무엇인가요?`,a:`항상 기도하고 낙심하지 말아야 할 것`},
+{b:"누가복음",n:51,ref:"19:8",q:`삭개오가 예수님을 영접하고 회개하며, 만일 남의 것을 속여 빼앗은 일이 있다면 몇 배로 갚겠다고 선언했나요?`,a:`네 갑절(4배)`},
+{b:"누가복음",n:52,ref:"22:42",q:`예수님이 감람산(겟세마네)에서 땀이 핏방울 같이 되도록 기도하실 때 드린 기도의 결론은 무엇이었나요?`,a:`"내 원대로 마시옵고 아버지의 원대로 되기를 원하나이다"`},
+{b:"누가복음",n:53,ref:"23:18-25",q:`예수님 대신 석방된 자로, 성중에 일어난 민란과 살인으로 옥에 갇혀 있던 죄수의 이름은?`,a:`바라바`},
+{b:"누가복음",n:54,ref:"23:42-43",q:`십자가에 달린 한 행악자가 "당신의 나라에 임하실 때에 나를 기억하소서" 했을 때 주신 약속은?`,a:`"오늘 네가 나와 함께 낙원에 있으리라"`},
+{b:"누가복음",n:55,ref:"24:42-43",q:`부활하신 후 제자들에게 나타나셔서 의심을 없애기 위해 친히 받아 잡수신 음식은 무엇인가요?`,a:`구운 생선 한 토막`},
+{b:"누가복음",n:56,ref:"4:5-7",q:`광야 시험 중 마귀가 "천하만국의 권세와 영광을 네게 주리라"며 제시했던 시험의 조건은 무엇이었나요?`,a:`마귀에게 엎드려 절하는 것`},
+{b:"누가복음",n:57,ref:"9:54-55",q:`사마리아 사람들이 예수님을 영접하지 않자, 하늘에서 불을 내려 멸하자고 건의했다가 책망을 들은 두 제자는 누구인가요?`,a:`야고보, 요한`},
+{b:"누가복음",n:58,ref:"10:29,36",q:`율법교사가 "내 이웃이 누구니이까" 묻자 예수님은 선한 사마리아인 비유를 드신 후 질문을 어떻게 바꾸어 되물으셨나요?`,a:`"누가 강도 만난 자의 이웃이 되겠느냐"`},
+{b:"누가복음",n:59,ref:"11:15",q:`바리새인들이 예수님더러 귀신의 왕의 힘을 빌려 귀신을 쫓아낸다고 모함했을 때 사용한 귀신의 왕 이름은?`,a:`바알세불`},
+{b:"누가복음",n:60,ref:"12:1",q:`예수님이 "바리새인들의 누룩 곧 ( ○○ )을 주의하라"고 경고하셨습니다. 빈칸에 들어갈 단어는?`,a:`외식`},
+{b:"누가복음",n:61,ref:"13:4-5",q:`실로암에서 망대가 무너져 치여 죽은 열여덟 사람의 사건을 언급하시며 예수님이 모든 청중에게 촉구하신 메시지는 무엇인가요?`,a:`"너희도 만일 회개하지 아니하면 다 이와 같이 망하리라"`},
+{b:"누가복음",n:62,ref:"15:10",q:`잃어버린 드라크마를 찾은 여인 비유 뒤에 나오는 구절로, "죄인 한 사람이 회개하면 ( ○○○○ ○○○들 ) 앞에 기쁨이 되느니라" 빈칸은?`,a:`하나님의 사자들`},
+{b:"누가복음",n:63,ref:"16:24",q:`부자와 거지 나사로 비유에서, 부자가 음부의 고통 중에 아브라함에게 나사로의 손가락 끝에 무엇을 찍어 혀를 서늘하게 해달라고 애원했나요?`,a:`물`},
+{b:"누가복음",n:64,ref:"18:11-12",q:`바리새인과 세리의 기도 비유에서 바리새인이 성전에서 자신을 자랑하며 세리와 비교한 종교적 행위 2가지는?`,a:`이레(일주일)에 두 번씩 금식하고, 소득의 십일조를 드린 것`},
+{b:"누가복음",n:65,ref:"23:6-7",q:`빌라도가 예수님을 심문하다가 갈릴리 관할임을 알고 당시 명절로 예루살렘에 와 있던 누구에게 예수를 보냈나요?`,a:`헤롯`},
+{b:"누가복음",n:66,ref:"1:5",q:`세례 요한의 부모인 제사장 사가랴와 엘리사벳이 속한 제사장 반열과 조상 계통은 무엇인가요?`,a:`아비야 반열, 아론의 자손`},
+{b:"누가복음",n:67,ref:"2:1-2",q:`예수님이 탄생하실 당시 천하로 다 호적하라고 명령했던 로마 황제와 시리아(수리아) 총독의 이름은?`,a:`가이사 아구스도, 구레뇨`},
+{b:"누가복음",n:68,ref:"2:36-37",q:`성전에서 금식하며 기도하다가 아기 예수님을 만난 아셀 지파 바누엘의 딸인 84세 여선지자의 이름은?`,a:`안나`},
+{b:"누가복음",n:69,ref:"3:23,28",q:`마태복음의 족보가 아브라함부터 아래로 내려가는 것과 달리, 누가복음 3장에 기록된 예수님의 족보는 누구로부터 거슬러 올라가 최종적으로 누구에게 닿나요?`,a:`예수님으로부터 시작하여 거슬러 올라가 아담을 지나 하나님까지`},
+{b:"누가복음",n:70,ref:"24:13,18",q:`부활하신 날, 예수님이 곁에 동행하셨으나 눈이 가리어져 알아보지 못한 채 예루살렘에서 25리 떨어진 엠마오 마을로 내려가던 두 제자 중 실명으로 언급된 한 사람의 이름은?`,a:`글로바`},
+
+{b:"야고보서",n:1,ref:"1:1",q:`야고보서의 저자인 야고보는 스스로를 누구의 종이라고 소개합니까?`,a:`하나님과 주 예수 그리스도`},
+{b:"야고보서",n:2,ref:"1:2",q:`여러 가지 시험을 당할 때 어떤 마음으로 여기라고 권면합니까?`,a:`온전히 기쁘게 여기라`},
+{b:"야고보서",n:3,ref:"1:5",q:`지혜가 부족한 사람은 어떻게 해야 합니까?`,a:`모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라`},
+{b:"야고보서",n:4,ref:"1:12",q:`시험을 참는 자가 약속으로 받게 될 것은 무엇입니까?`,a:`생명의 면류관`},
+{b:"야고보서",n:5,ref:"1:15",q:`욕심이 잉태하면 무엇을 낳고, 죄가 장성하면 무엇을 낳습니까?`,a:`죄, 사망`},
+{b:"야고보서",n:6,ref:"1:17",q:`빛들의 아버지께로부터 내려오는 것은 무엇입니까?`,a:`온갖 좋은 은사와 온전한 선물`},
+{b:"야고보서",n:7,ref:"1:19",q:`듣기, 말하기, 성내기에 대해 야고보서는 어떻게 하라고 권면합니까?`,a:`듣기는 속히 하고, 말하기는 더디 하며, 성내기도 더디 하라`},
+{b:"야고보서",n:8,ref:"2:1",q:`영광의 주 예수 그리스도에 대한 믿음을 가진 자가 사람을 대할 때 하지 말아야 할 것은 무엇입니까?`,a:`사람을 차별하여 대하는 것`},
+{b:"야고보서",n:9,ref:"2:8",q:`성경에 기록된 '최고한 법'은 무엇을 의미합니까?`,a:`네 이웃 사랑하기를 네 몸과 같이 하라`},
+{b:"야고보서",n:10,ref:"2:17",q:`행함이 없는 믿음은 그 자체가 어떤 상태입니까?`,a:`죽은 것`},
+{b:"야고보서",n:11,ref:"3:6",q:`혀는 불이요 무엇의 세계라고 표현합니까?`,a:`불의의 세계`},
+{b:"야고보서",n:12,ref:"3:17",q:`위로부터 난 지혜의 첫 번째 특성은 무엇입니까?`,a:`성결`},
+{b:"야고보서",n:13,ref:"4:7",q:`마귀를 대적하면 마귀는 어떻게 됩니까?`,a:`피함`},
+{b:"야고보서",n:14,ref:"5:14",q:`너희 중에 병든 자가 있으면 누구를 청하여 기도 받아야 합니까?`,a:`교회의 장로들`},
+{b:"야고보서",n:15,ref:"5:16",q:`의인의 간구는 어떤 힘이 있습니까?`,a:`역사하는 힘이 큼`},
+
+{b:"빌립보서",n:1,ref:"",q:`바울이 빌립보서를 기록할 당시 자신의 처지는 어떤 상태였나요?`,a:`감옥에 갇힌 상태(투옥 중 / 메임)`},
+{b:"빌립보서",n:2,ref:"",q:`바울이 고백한 유명한 말씀으로, "이는 내게 사는 것이 그리스도니 ○○○ 것도 유익함이라"에서 빈칸에 들어갈 말은?`,a:`죽는`},
+{b:"빌립보서",n:3,ref:"1:29",q:`그리스도를 위하여 우리에게 은혜를 주신 것은 그를 믿을뿐만 아니라 무엇도 받게 하려 하심인가요?`,a:`고난`},
+{b:"빌립보서",n:4,ref:"2:5",q:`"너희 안에 이 마음을 품으라 곧 누구의 마음이니"라고 했나요?`,a:`그리스도 예수의 마음`},
+{b:"빌립보서",n:5,ref:"",q:`예수님이 죽기까지 복종하신 장소는 어디인가요?`,a:`십자가`},
+{b:"빌립보서",n:6,ref:"2:12",q:`"항상 복종하여 두렵고 떨림으로 너희 무엇을 이루라"고 권면했나요?`,a:`구원`},
+{b:"빌립보서",n:7,ref:"",q:`바울이 빌립보 교회에 자신의 아들과 같이 여겨 먼저 보내고자 했던 충성스러운 동역자의 이름은?`,a:`디모데`},
+{b:"빌립보서",n:8,ref:"",q:`바울은 예수 그리스도를 아는 지식이 가장 고상하기 때문에 자신이 가졌던 모든 것을 무엇으로 여겼나요?`,a:`배설물`},
+{b:"빌립보서",n:9,ref:"",q:`바울은 자신이 이미 얻었다 함도 아니요 온전히 이루었다 함도 아니라 오직 잡으려고 달려가는 것을 무엇이라고 표현했나요?`,a:`푯대 (또는 위에서 부르신 부름의 상)`},
+{b:"빌립보서",n:10,ref:"3:20",q:`"그러나 우리의 ○○권은 하늘에 있는지라"라고 했습니다. 빈칸에 들어갈 말은?`,a:`시민권`},
+{b:"빌립보서",n:11,ref:"4:2",q:`주 안에서 같은 마음을 품으라고 권면 받은 두 여성의 이름은?`,a:`유오디아, 순두게`},
+{b:"빌립보서",n:12,ref:"4:4",q:`"주 안에서 항상 ○○○○ 내가 다시 말하노니 ○○○○" 빈칸에 들어갈 말은?`,a:`기뻐하라`},
+{b:"빌립보서",n:13,ref:"",q:`"아무것도 염려하지 말고 다만 모든 일에 무엇과 무엇으로 너희 구할 것을 감사함으로 하나님께 아뢰라"고 했나요?`,a:`기도와 간구`},
+{b:"빌립보서",n:14,ref:"",q:`"내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라"는 몇 장 몇 절 말씀인가요?`,a:`빌립보서 4장 13절`},
+{b:"빌립보서",n:15,ref:"",q:`바울이 마게도냐를 떠날 때에 복음의 주고받는 내력에 참여한 유일한 교회는 어디인가요?`,a:`빌립보 교회`},
+];
+
+const BOOKS = [
+  {key:"전체", color:"#C9A227"},
+  {key:"누가복음", color:"#4E6E8E"},
+  {key:"야고보서", color:"#8B2635"},
+  {key:"빌립보서", color:"#5E7A4A"},
+];
+
+// ---------------- STATE ----------------
+let progress = {}; // id -> 'correct' | 'wrong'
+let currentDeck = [];
+let currentIndex = 0;
+let sessionCorrect = 0;
+let sessionWrong = 0;
+let selectedBook = "전체";
+let selectedMode = "order";
+let revealed = false;
+
+function idOf(item){ return item.b + "-" + item.n; }
+
+// ---------------- STORAGE ----------------
+async function loadProgress(){
+  try{
+    const res = await window.storage.get('quiz-progress', false);
+    if(res && res.value){ progress = JSON.parse(res.value); }
+  }catch(e){ progress = {}; }
+}
+async function saveProgress(){
+  try{
+    await window.storage.set('quiz-progress', JSON.stringify(progress), false);
+  }catch(e){ /* best effort */ }
+}
+
+// ---------------- HOME RENDER ----------------
+function bookItems(bookKey){
+  if(bookKey === "전체") return DATA;
+  return DATA.filter(d => d.b === bookKey);
+}
+
+function masteredCount(bookKey){
+  return bookItems(bookKey).filter(d => progress[idOf(d)] === 'correct').length;
+}
+
+function wrongCount(bookKey){
+  return bookItems(bookKey).filter(d => progress[idOf(d)] === 'wrong').length;
+}
+
+function renderHome(){
+  const tabsEl = document.getElementById('book-tabs');
+  tabsEl.innerHTML = '';
+  BOOKS.forEach(book => {
+    const items = bookItems(book.key);
+    const mastered = masteredCount(book.key);
+    const btn = document.createElement('button');
+    btn.className = 'tab';
+    btn.style.setProperty('--tab-color', book.color);
+    if(book.key === selectedBook) btn.style.boxShadow = '0 0 0 2px ' + book.color + ', 0 3px 0 rgba(0,0,0,0.25), 0 6px 14px rgba(0,0,0,0.25)';
+    btn.innerHTML = `
+      <div>
+        <div class="tab-name">${book.key}</div>
+        <div class="tab-count">${items.length}문항 중 ${mastered}개 완료</div>
+      </div>
+      <div class="tab-badge">${items.length ? Math.round(mastered/items.length*100) : 0}%</div>
+    `;
+    btn.addEventListener('click', () => {
+      selectedBook = book.key;
+      updateWrongModeAvailability();
+      renderHome();
+    });
+    tabsEl.appendChild(btn);
+  });
+  updateWrongModeAvailability();
+}
+
+function updateWrongModeAvailability(){
+  const wBtn = document.getElementById('wrong-mode-btn');
+  const wCount = wrongCount(selectedBook);
+  wBtn.disabled = wCount === 0;
+  wBtn.textContent = wCount > 0 ? `오답만 복습 (${wCount})` : '오답만 복습';
+  if(wBtn.disabled && selectedMode === 'wrong'){
+    selectedMode = 'order';
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelector('.mode-btn[data-mode="order"]').classList.add('selected');
+  }
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(btn.disabled) return;
+    selectedMode = btn.dataset.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+document.getElementById('reset-link').addEventListener('click', async () => {
+  if(confirm('전체 학습 기록을 초기화할까요?')){
+    progress = {};
+    await saveProgress();
+    renderHome();
+  }
+});
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  let deck = bookItems(selectedBook);
+  if(selectedMode === 'wrong'){
+    deck = deck.filter(d => progress[idOf(d)] === 'wrong');
+  }
+  if(selectedMode === 'random' || selectedMode === 'wrong'){
+    deck = shuffle(deck);
+  }
+  if(deck.length === 0) return;
+  currentDeck = deck;
+  currentIndex = 0;
+  sessionCorrect = 0;
+  sessionWrong = 0;
+  showScreen('quiz');
+  renderCard();
+});
+
+// ---------------- QUIZ RENDER ----------------
+function renderCard(){
+  const item = currentDeck[currentIndex];
+  revealed = false;
+  document.getElementById('quiz-label').textContent = selectedBook === '전체' ? item.b : selectedBook;
+  document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${currentDeck.length}`;
+  document.getElementById('progress-fill').style.width = ((currentIndex) / currentDeck.length * 100) + '%';
+  document.getElementById('card-ref').textContent = item.b + (item.ref ? ' ' + item.ref : '');
+  document.getElementById('card-q').textContent = item.q;
+  document.getElementById('card-a-text').textContent = item.a;
+  document.getElementById('card-answer').classList.remove('show');
+  document.getElementById('card-hint').style.display = 'block';
+  document.getElementById('answer-buttons').classList.remove('show');
+}
+
+document.getElementById('card').addEventListener('click', () => {
+  if(revealed) return;
+  revealed = true;
+  document.getElementById('card-answer').classList.add('show');
+  document.getElementById('card-hint').style.display = 'none';
+  document.getElementById('answer-buttons').classList.add('show');
+});
+
+async function mark(result){
+  const item = currentDeck[currentIndex];
+  progress[idOf(item)] = result;
+  if(result === 'correct') sessionCorrect++; else sessionWrong++;
+  await saveProgress();
+
+  if(currentIndex + 1 < currentDeck.length){
+    currentIndex++;
+    renderCard();
+  }else{
+    document.getElementById('progress-fill').style.width = '100%';
+    showSummary();
+  }
+}
+
+document.getElementById('mark-correct').addEventListener('click', () => mark('correct'));
+document.getElementById('mark-wrong').addEventListener('click', () => mark('wrong'));
+
+document.getElementById('quit-btn').addEventListener('click', () => {
+  showScreen('home');
+  renderHome();
+});
+
+// ---------------- SUMMARY ----------------
+function showSummary(){
+  document.getElementById('sum-correct').textContent = sessionCorrect;
+  document.getElementById('sum-wrong').textContent = sessionWrong;
+  document.getElementById('summary-sub').textContent = `${selectedBook} · 이번 세션 ${currentDeck.length}문항`;
+  const retryBtn = document.getElementById('retry-wrong-btn');
+  retryBtn.style.display = sessionWrong > 0 ? 'block' : 'none';
+  showScreen('summary');
+}
+
+document.getElementById('retry-wrong-btn').addEventListener('click', () => {
+  const deck = currentDeck.filter(item => progress[idOf(item)] === 'wrong');
+  if(deck.length === 0) { showScreen('home'); renderHome(); return; }
+  currentDeck = deck;
+  currentIndex = 0;
+  sessionCorrect = 0;
+  sessionWrong = 0;
+  showScreen('quiz');
+  renderCard();
+});
+
+document.getElementById('home-btn').addEventListener('click', () => {
+  showScreen('home');
+  renderHome();
+});
+
+// ---------------- SCREEN NAV ----------------
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+// ---------------- INIT ----------------
+(async function init(){
+  await loadProgress();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('home-content').style.display = 'block';
+  renderHome();
+})();
+</script>
+</body>
+</html>
