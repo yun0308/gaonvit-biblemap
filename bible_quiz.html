@@ -110,6 +110,28 @@
     min-width:52px;
     text-align:right;
   }
+  .tab-check{
+    width:22px;
+    height:22px;
+    border-radius:7px;
+    border:2px solid var(--tab-color, var(--gold));
+    flex-shrink:0;
+    position:relative;
+  }
+  .tab-check.checked{
+    background: var(--tab-color, var(--gold));
+  }
+  .tab-check.checked::after{
+    content:"✓";
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#FFFDF7;
+    font-size:14px;
+    font-weight:700;
+  }
 
   .section-label{
     font-size:12px;
@@ -168,6 +190,43 @@
     text-decoration: underline;
     cursor:pointer;
   }
+
+  .backup-section{
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(244,238,219,0.15);
+  }
+  .backup-note{
+    font-size:12px;
+    color: var(--cream-dim);
+    line-height:1.6;
+    margin-bottom: 12px;
+  }
+  .backup-row{
+    display:flex;
+    gap:10px;
+    margin-bottom: 10px;
+  }
+  .backup-textarea{
+    width:100%;
+    background: var(--paper);
+    color: var(--ink);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    line-height:1.5;
+    resize: none;
+    box-sizing: border-box;
+  }
+  .backup-hint{
+    font-size:11px;
+    color: var(--cream-dim);
+    margin-top:6px;
+  }
+  .backup-hint.ok{ color: var(--gold-bright); font-weight:700; }
+  .backup-hint.err{ color: var(--wine-bright); font-weight:700; }
 
   /* ---------- Quiz screen ---------- */
   .quiz-top{
@@ -372,17 +431,37 @@
   <div id="screen-home" class="screen active">
     <div id="loading" class="loading">진행 상황 불러오는 중…</div>
     <div id="home-content" style="display:none;">
-      <div class="section-label">성경 선택</div>
+      <div class="section-label">학습 범위 선택 (여러 개 선택 가능)</div>
       <div class="tabs" id="book-tabs"></div>
+      <div class="backup-hint" style="margin:-4px 2px 14px;">※ "랜덤(전체)"은 위 선택과 무관하게 전체 100문항에서 진행됩니다. "순서대로"와 "오답만 복습"은 선택한 범위 안에서만 진행됩니다.</div>
 
       <div class="section-label">학습 방식</div>
       <div class="mode-row">
         <button class="mode-btn selected" data-mode="order">순서대로</button>
-        <button class="mode-btn" data-mode="random">랜덤</button>
+        <button class="mode-btn" data-mode="random">랜덤(전체)</button>
         <button class="mode-btn" data-mode="wrong" id="wrong-mode-btn" disabled>오답만 복습</button>
       </div>
 
       <button class="start-btn" id="start-btn">학습 시작</button>
+
+      <div class="backup-section">
+        <div class="section-label">진행 상황 백업</div>
+        <div class="backup-note">이제 이 브라우저에 진행 상황이 자동으로 저장됩니다. 기기를 바꾸거나 브라우저 데이터를 지울 경우를 대비해, 아래 "내보내기"로 코드를 복사해두면 다른 곳에서도 복원할 수 있습니다.</div>
+        <div class="backup-row">
+          <button class="mode-btn" id="export-btn">내보내기</button>
+          <button class="mode-btn" id="import-toggle-btn">복원하기</button>
+        </div>
+        <div id="export-box" style="display:none;">
+          <textarea id="export-code" class="backup-textarea" readonly rows="4"></textarea>
+          <div class="backup-hint">상자를 탭하면 전체 선택됩니다. 복사해서 보관하세요.</div>
+        </div>
+        <div id="import-box" style="display:none;">
+          <textarea id="import-code" class="backup-textarea" rows="4" placeholder="백업해둔 코드를 여기에 붙여넣으세요"></textarea>
+          <button class="start-btn" id="import-apply-btn" style="margin-top:8px;">이 코드로 복원</button>
+          <div class="backup-hint" id="import-status"></div>
+        </div>
+      </div>
+
       <div class="reset-link" id="reset-link">전체 학습 기록 초기화</div>
     </div>
   </div>
@@ -539,10 +618,11 @@ const DATA = [
 ];
 
 const BOOKS = [
-  {key:"전체", color:"#C9A227"},
-  {key:"누가복음", color:"#4E6E8E"},
-  {key:"야고보서", color:"#8B2635"},
-  {key:"빌립보서", color:"#5E7A4A"},
+  {key:"전체", color:"#C9A227", filter: () => true},
+  {key:"누가복음 1", color:"#4E6E8E", filter: d => d.b === "누가복음" && d.n <= 35},
+  {key:"누가복음 2", color:"#3D5570", filter: d => d.b === "누가복음" && d.n >= 36},
+  {key:"야고보서", color:"#8B2635", filter: d => d.b === "야고보서"},
+  {key:"빌립보서", color:"#5E7A4A", filter: d => d.b === "빌립보서"},
 ];
 
 // ---------------- STATE ----------------
@@ -551,29 +631,45 @@ let currentDeck = [];
 let currentIndex = 0;
 let sessionCorrect = 0;
 let sessionWrong = 0;
-let selectedBook = "전체";
+let selectedBooks = new Set(["전체"]);
 let selectedMode = "order";
 let revealed = false;
 
 function idOf(item){ return item.b + "-" + item.n; }
 
 // ---------------- STORAGE ----------------
+// 이 파일은 다운로드해서 휴대폰 브라우저로 직접 여는 방식이므로,
+// Claude 대화 전용 API가 아니라 브라우저 표준 localStorage를 사용합니다.
 async function loadProgress(){
   try{
-    const res = await window.storage.get('quiz-progress', false);
-    if(res && res.value){ progress = JSON.parse(res.value); }
+    const raw = localStorage.getItem('quiz-progress');
+    if(raw){ progress = JSON.parse(raw); }
   }catch(e){ progress = {}; }
 }
 async function saveProgress(){
   try{
-    await window.storage.set('quiz-progress', JSON.stringify(progress), false);
-  }catch(e){ /* best effort */ }
+    localStorage.setItem('quiz-progress', JSON.stringify(progress));
+  }catch(e){ /* best effort - 저장 실패 시 세션 내에서만 유지됨 */ }
 }
 
 // ---------------- HOME RENDER ----------------
 function bookItems(bookKey){
-  if(bookKey === "전체") return DATA;
-  return DATA.filter(d => d.b === bookKey);
+  const book = BOOKS.find(b => b.key === bookKey);
+  return book ? DATA.filter(book.filter) : DATA;
+}
+
+// 현재 선택된 범위(복수 가능)를 합친 전체 문항 목록 (중복 제거)
+function combinedItems(){
+  if(selectedBooks.has("전체")) return DATA;
+  const ids = new Set();
+  const result = [];
+  selectedBooks.forEach(key => {
+    bookItems(key).forEach(d => {
+      const id = idOf(d);
+      if(!ids.has(id)){ ids.add(id); result.push(d); }
+    });
+  });
+  return result;
 }
 
 function masteredCount(bookKey){
@@ -584,25 +680,39 @@ function wrongCount(bookKey){
   return bookItems(bookKey).filter(d => progress[idOf(d)] === 'wrong').length;
 }
 
+function toggleBook(key){
+  if(key === "전체"){
+    selectedBooks = new Set(["전체"]);
+  }else{
+    selectedBooks.delete("전체");
+    if(selectedBooks.has(key)) selectedBooks.delete(key);
+    else selectedBooks.add(key);
+    if(selectedBooks.size === 0) selectedBooks = new Set(["전체"]);
+  }
+}
+
 function renderHome(){
   const tabsEl = document.getElementById('book-tabs');
   tabsEl.innerHTML = '';
   BOOKS.forEach(book => {
     const items = bookItems(book.key);
     const mastered = masteredCount(book.key);
+    const checked = selectedBooks.has(book.key);
     const btn = document.createElement('button');
     btn.className = 'tab';
     btn.style.setProperty('--tab-color', book.color);
-    if(book.key === selectedBook) btn.style.boxShadow = '0 0 0 2px ' + book.color + ', 0 3px 0 rgba(0,0,0,0.25), 0 6px 14px rgba(0,0,0,0.25)';
     btn.innerHTML = `
-      <div>
-        <div class="tab-name">${book.key}</div>
-        <div class="tab-count">${items.length}문항 중 ${mastered}개 완료</div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="tab-check ${checked ? 'checked' : ''}"></div>
+        <div>
+          <div class="tab-name">${book.key}</div>
+          <div class="tab-count">${items.length}문항 중 ${mastered}개 완료</div>
+        </div>
       </div>
       <div class="tab-badge">${items.length ? Math.round(mastered/items.length*100) : 0}%</div>
     `;
     btn.addEventListener('click', () => {
-      selectedBook = book.key;
+      toggleBook(book.key);
       updateWrongModeAvailability();
       renderHome();
     });
@@ -613,7 +723,7 @@ function renderHome(){
 
 function updateWrongModeAvailability(){
   const wBtn = document.getElementById('wrong-mode-btn');
-  const wCount = wrongCount(selectedBook);
+  const wCount = combinedItems().filter(d => progress[idOf(d)] === 'wrong').length;
   wBtn.disabled = wCount === 0;
   wBtn.textContent = wCount > 0 ? `오답만 복습 (${wCount})` : '오답만 복습';
   if(wBtn.disabled && selectedMode === 'wrong'){
@@ -630,6 +740,39 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
   });
+});
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  const box = document.getElementById('export-box');
+  document.getElementById('import-box').style.display = 'none';
+  document.getElementById('export-code').value = JSON.stringify(progress);
+  box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+});
+
+document.getElementById('export-code').addEventListener('focus', function(){ this.select(); });
+document.getElementById('export-code').addEventListener('click', function(){ this.select(); });
+
+document.getElementById('import-toggle-btn').addEventListener('click', () => {
+  const box = document.getElementById('import-box');
+  document.getElementById('export-box').style.display = 'none';
+  box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+});
+
+document.getElementById('import-apply-btn').addEventListener('click', async () => {
+  const raw = document.getElementById('import-code').value.trim();
+  const statusEl = document.getElementById('import-status');
+  statusEl.classList.remove('ok','err');
+  try{
+    const parsed = JSON.parse(raw);
+    progress = Object.assign({}, progress, parsed);
+    await saveProgress();
+    statusEl.textContent = '복원 완료';
+    statusEl.classList.add('ok');
+    renderHome();
+  }catch(e){
+    statusEl.textContent = '코드 형식이 올바르지 않습니다. 전체를 정확히 복사했는지 확인해주세요.';
+    statusEl.classList.add('err');
+  }
 });
 
 document.getElementById('reset-link').addEventListener('click', async () => {
@@ -650,12 +793,13 @@ function shuffle(arr){
 }
 
 document.getElementById('start-btn').addEventListener('click', () => {
-  let deck = bookItems(selectedBook);
-  if(selectedMode === 'wrong'){
-    deck = deck.filter(d => progress[idOf(d)] === 'wrong');
-  }
-  if(selectedMode === 'random' || selectedMode === 'wrong'){
-    deck = shuffle(deck);
+  let deck;
+  if(selectedMode === 'random'){
+    deck = shuffle(DATA); // 랜덤은 범위 선택과 무관하게 항상 전체 100문항
+  }else if(selectedMode === 'wrong'){
+    deck = shuffle(combinedItems().filter(d => progress[idOf(d)] === 'wrong'));
+  }else{
+    deck = combinedItems(); // 순서대로: 선택한 범위 안에서
   }
   if(deck.length === 0) return;
   currentDeck = deck;
@@ -670,7 +814,7 @@ document.getElementById('start-btn').addEventListener('click', () => {
 function renderCard(){
   const item = currentDeck[currentIndex];
   revealed = false;
-  document.getElementById('quiz-label').textContent = selectedBook === '전체' ? item.b : selectedBook;
+  document.getElementById('quiz-label').textContent = item.b;
   document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${currentDeck.length}`;
   document.getElementById('progress-fill').style.width = ((currentIndex) / currentDeck.length * 100) + '%';
   document.getElementById('card-ref').textContent = item.b + (item.ref ? ' ' + item.ref : '');
@@ -716,7 +860,7 @@ document.getElementById('quit-btn').addEventListener('click', () => {
 function showSummary(){
   document.getElementById('sum-correct').textContent = sessionCorrect;
   document.getElementById('sum-wrong').textContent = sessionWrong;
-  document.getElementById('summary-sub').textContent = `${selectedBook} · 이번 세션 ${currentDeck.length}문항`;
+  document.getElementById('summary-sub').textContent = `${Array.from(selectedBooks).join(', ')} · 이번 세션 ${currentDeck.length}문항`;
   const retryBtn = document.getElementById('retry-wrong-btn');
   retryBtn.style.display = sessionWrong > 0 ? 'block' : 'none';
   showScreen('summary');
