@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>리딩지저스 재생목록</title>
+
+<meta name="description" content="웨스트민스터코리아 «리딩지저스» 채널의 해설영상·오디오 바이블을 성경 66권 기준으로 정리한 목록입니다.">
+<meta name="theme-color" content="#1B2A4A">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF7F0;
+    --surface:#FFFFFF;
+    --surface-2:#F5F1E6;
+    --ink:#1B2A4A;
+    --ink-soft:#5B6A87;
+    --line:#E7E0CE;
+    --navy:#1B2A4A;
+    --gold:#C9A961;
+    --gold-strong:#9A7B2E;
+    --gold-tint:#F6ECD4;
+    --lecture-tint:#E4E8EF;
+    --lecture-ink:#1B2A4A;
+    --r:10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141A26;
+      --surface:#1B2333;
+      --surface-2:#212B3F;
+      --ink:#EDEBE2;
+      --ink-soft:#A7ADBC;
+      --line:#31405F;
+      --navy:#E3D6AC;
+      --gold:#D8B563;
+      --gold-strong:#EAC978;
+      --gold-tint:#2A2315;
+      --lecture-tint:#28324A;
+      --lecture-ink:#CBD3E3;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141A26;
+    --surface:#1B2333;
+    --surface-2:#212B3F;
+    --ink:#EDEBE2;
+    --ink-soft:#A7ADBC;
+    --line:#31405F;
+    --navy:#E3D6AC;
+    --gold:#D8B563;
+    --gold-strong:#EAC978;
+    --gold-tint:#2A2315;
+    --lecture-tint:#28324A;
+    --lecture-ink:#CBD3E3;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    padding-inline:20px;
+    padding-block: max(28px, env(safe-area-inset-top, 0px)) max(48px, env(safe-area-inset-bottom, 0px));
+    line-height:1.6;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+
+  header.page{
+    padding-block:28px 24px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    font-size:11.5px;
+    letter-spacing:.15em;
+    color:var(--gold-strong);
+    font-weight:700;
+    text-transform:uppercase;
+  }
+  h1{
+    font-size:clamp(24px,4vw,31px);
+    font-weight:700;
+    margin:10px 0 10px;
+    color:var(--navy);
+    letter-spacing:-.02em;
+    text-wrap:balance;
+  }
+  header.page p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:15.5px;
+    max-width:64ch;
+  }
+  .stats{
+    display:flex;
+    gap:1px;
+    background:var(--line);
+    border-radius:var(--r);
+    overflow:hidden;
+    flex-wrap:wrap;
+    margin-top:18px;
+    box-shadow:0 1px 2px rgba(27,42,74,.06), 0 6px 20px rgba(27,42,74,.06);
+  }
+  .stat{
+    background:var(--surface);
+    flex:1;
+    min-width:110px;
+    border:none;
+    border-radius:0;
+    padding:16px 13px 14px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .stat b{
+    display:block;
+    font-size:26px;
+    font-weight:700;
+    color:var(--navy);
+    font-variant-numeric: tabular-nums;
+    margin-bottom:3px;
+  }
+  .legend{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-top:16px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .legend .dot{ width:9px; height:9px; border-radius:3px; display:inline-block; }
+  .legend .dot.lecture{ background:var(--lecture-ink); }
+  .legend .dot.audio{ background:var(--gold); }
+
+  nav.jump{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:28px;
+    position:sticky;
+    top: env(safe-area-inset-top, 0px);
+    background:var(--bg);
+    padding-block:6px;
+    z-index:5;
+  }
+  nav.jump a{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--gold-strong);
+    background:var(--gold-tint);
+    border-radius:999px;
+    padding:6px 13px;
+    text-decoration:none;
+  }
+
+  section.group{ margin-bottom:32px; scroll-margin-top: 44px; }
+  .group-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:6px;
+    flex-wrap:wrap;
+  }
+  .group-head h2{
+    font-size:19px;
+    margin:0;
+    color:var(--navy);
+  }
+  .group-head .badge{
+    font-size:11px;
+    color:var(--gold-strong);
+    background:var(--gold-tint);
+    border-radius:999px;
+    padding:3px 10px;
+    font-weight:600;
+  }
+  .group-desc{
+    color:var(--ink-soft);
+    font-size:13.5px;
+    margin:0 0 14px;
+    max-width:70ch;
+  }
+  .testament-head{
+    font-size:13px;
+    font-weight:700;
+    color:var(--gold-strong);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin:26px 0 10px;
+    padding-bottom:0;
+    border-bottom:none;
+  }
+  .testament-head:first-child{ margin-top:0; }
+
+  .vol-list{ display:flex; flex-direction:column; gap:10px; }
+
+  details.vol{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    overflow:hidden;
+  }
+  details.vol[open]{ border-color:var(--gold); }
+
+  summary.vol-head{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 15px;
+  }
+  summary.vol-head::-webkit-details-marker{ display:none; }
+  summary.vol-head::marker{ content:""; }
+
+  .chev{
+    width:15px; height:15px; flex:none;
+    color:var(--ink-soft);
+    transition:transform .15s ease;
+  }
+  details.vol[open] .chev{ transform:rotate(90deg); color:var(--gold-strong); }
+
+  .book-title{
+    font-weight:700;
+    font-size:16px;
+    color:var(--navy);
+    flex:1;
+    min-width:0;
+  }
+  .vol-count{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    white-space:nowrap;
+    flex:none;
+  }
+  .lec-pill{
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--lecture-ink);
+    background:var(--lecture-tint);
+    border-radius:999px;
+    padding:2px 8px;
+    white-space:nowrap;
+    flex:none;
+  }
+
+  .video-list{
+    border-top:1px solid var(--line);
+    padding:8px 8px 12px;
+    background:var(--surface-2);
+  }
+  a.video-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    color:var(--ink);
+  }
+  a.video-row:hover{ background:var(--surface); }
+  a.video-row:focus-visible{ outline:2px solid var(--gold); outline-offset:-2px; }
+  .video-tag{
+    font-size:10.5px;
+    font-weight:700;
+    color:#7A5D10;
+    background:var(--gold-tint);
+    border:none;
+    border-radius:5px;
+    padding:2.5px 7px;
+    white-space:nowrap;
+    flex:none;
+    font-variant-numeric: tabular-nums;
+  }
+  a.video-row.is-lecture{ background:var(--lecture-tint); }
+  a.video-row.is-lecture:hover{ filter:brightness(0.97); }
+  a.video-row.is-lecture .video-tag{
+    color:var(--surface);
+    background:var(--navy);
+  }
+  a.video-row.is-lecture .video-kind{
+    font-size:10px;
+    font-weight:700;
+    color:var(--lecture-ink);
+    white-space:nowrap;
+    flex:none;
+  }
+  .video-label{
+    font-size:13.5px;
+    flex:1;
+    min-width:0;
+  }
+  a.video-row.is-lecture .video-label{ font-weight:600; color:var(--lecture-ink); }
+  .video-link-icon{
+    width:13px; height:13px; flex:none;
+    color:var(--ink-soft);
+  }
+  a.video-row:hover .video-link-icon{ color:var(--gold-strong); }
+
+  footer.page{
+    margin-top:36px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  footer.page a{ color:var(--gold-strong); }
+
+  a.intro-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--lecture-tint);
+    border:1px solid var(--navy);
+    border-radius:var(--r);
+    padding:12px 14px;
+    text-decoration:none;
+    color:var(--lecture-ink);
+    margin-bottom:9px;
+  }
+  a.intro-row:hover{ filter:brightness(0.97); }
+  a.intro-row:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  a.intro-row .intro-badge{
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--surface);
+    background:var(--navy);
+    border-radius:999px;
+    padding:2px 9px;
+    white-space:nowrap;
+    flex:none;
+  }
+  a.intro-row .intro-title{
+    font-weight:700;
+    font-size:14.5px;
+    flex:1;
+    min-width:0;
+  }
+  .intro-missing{
+    font-size:12px;
+    color:var(--ink-soft);
+    background:var(--surface);
+    border:1px dashed var(--line);
+    border-radius:var(--r);
+    padding:10px 14px;
+    margin-bottom:9px;
+  }
+
+  .lesson-head{
+    font-size:11px;
+    font-weight:700;
+    color:var(--gold-strong);
+    letter-spacing:.06em;
+    padding:10px 10px 4px;
+  }
+
+  .crossref-note{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    background:var(--surface);
+    border:1px dashed var(--navy);
+    border-radius:var(--r);
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .crossref-note .crossref-head{
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .crossref-note .crossref-head b{ color:var(--lecture-ink); }
+  a.crossref-link{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:var(--lecture-ink);
+    font-size:13px;
+    font-weight:600;
+  }
+  a.crossref-link:hover{ text-decoration:underline; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <header class="page">
+    <div class="eyebrow">Reading Jesus · 리딩지저스</div>
+    <h1>리딩지저스 재생목록 &amp; 수록 영상</h1>
+    <p>웨스트민스터코리아 «리딩지저스» 유튜브 채널의 오디오 바이블(일별 낭독)과 해설영상(41편)을 창세기부터 요한계시록까지 성경 66권 기준으로 정리했습니다. 책을 펼치면 그 책에 속한 영상이 나오고, 각 항목을 클릭하면 해당 영상으로 이동합니다.</p>
+    <div class="stats">
+      <div class="stat"><b>66</b>성경 권</div>
+      <div class="stat"><b>41</b>해설영상</div>
+      <div class="stat"><b>270</b>오디오 바이블(일별)</div>
+      <div class="stat"><b>66</b>전체듣기</div>
+    </div>
+    <div class="legend">
+      <span><i class="dot lecture"></i>해설영상 (일러스트·스토리텔링)</span>
+      <span><i class="dot audio"></i>오디오 바이블 (일별 낭독)</span>
+    </div>
+  </header>
+
+  <nav class="jump">
+    <a href="#sec-books">성경 66권 (해설영상 + 오디오 바이블)</a>
+    <a href="#sec-full">전체듣기(구약·신약)</a>
+  </nav>
+
+  <section class="group" id="sec-books">
+    <div class="group-head">
+      <h2>성경 66권</h2>
+      <span class="badge">해설영상 + 45주 통독 오디오</span>
+    </div>
+    <p class="group-desc">책을 펼치면 해설영상과 오디오 바이블이 읽는 순서대로 나옵니다. 두 책을 함께 다루는 해설영상은 관련된 책 모두에서 볼 수 있습니다.</p>
+    <div id="book-list"></div>
+  </section>
+
+  <section class="group" id="sec-full">
+    <div class="group-head">
+      <h2>오디오 바이블 · 전체듣기</h2>
+      <span class="badge">구약 39권 · 신약 27권</span>
+    </div>
+    <p class="group-desc">구약·신약 66권을 책 단위로 이어 들을 수 있도록 묶은 재생목록입니다.</p>
+    <div class="vol-list" id="full-list"></div>
+  </section>
+
+  <footer class="page">
+    출처: 리딩지저스 유튜브 채널(<a href="https://www.youtube.com/channel/UCDKV9zBBIEA1If3sBz_rMZQ" target="_blank" rel="noopener">@readingjesus</a>) 공개 재생목록 · 영상 제목·개수는 확인 시점 기준이며 채널 업데이트에 따라 달라질 수 있습니다. 해설영상의 배치 위치와 룻기·요나·하박국·빌레몬서·요한삼서처럼 이웃한 책과 하루 분량을 함께 나눈 오디오는 원본 재생목록의 진행 순서를 근거로 정리한 것입니다.
+  </footer>
+
+</div>
+
+<script id="book-data" type="application/json">{"창세기":[{"type":"lecture","tag":"1강","label":"창세기 1","url":"https://www.youtube.com/watch?v=LLu2xB_rIT4","group":"1권 1강"},{"type":"lecture","tag":"2강","label":"창세기 2","url":"https://www.youtube.com/watch?v=yUeqd5_MsFY","group":"1권 2강"},{"type":"audio","tag":"1권 1강 1일차","label":"창세기 1-4장","url":"https://www.youtube.com/watch?v=tanJ7F3Bc_4","group":"1권 1강"},{"type":"audio","tag":"1권 1강 2일차","label":"창세기 5-8장","url":"https://www.youtube.com/watch?v=QCeCLxgwZIo","group":"1권 1강"},{"type":"audio","tag":"1권 1강 3일차","label":"창세기 9-12장","url":"https://www.youtube.com/watch?v=O-pXprGiH8c","group":"1권 1강"},{"type":"audio","tag":"1권 1강 4일차","label":"창세기 13-16장","url":"https://www.youtube.com/watch?v=C6k7Ih8FFX4","group":"1권 1강"},{"type":"audio","tag":"1권 1강 5일차","label":"창세기 17-20장","url":"https://www.youtube.com/watch?v=3vD3r72_Y2w","group":"1권 1강"},{"type":"audio","tag":"1권 1강 6일차","label":"창세기 21-24장","url":"https://www.youtube.com/watch?v=IVHwMA6CmQ0","group":"1권 1강"},{"type":"audio","tag":"1권 2강 1일차","label":"창세기 25-28장","url":"https://www.youtube.com/watch?v=u6S1pIO0omI","group":"1권 2강"},{"type":"audio","tag":"1권 2강 2일차","label":"창세기 29-32장","url":"https://www.youtube.com/watch?v=f8kGLRbDyyo","group":"1권 2강"},{"type":"audio","tag":"1권 2강 3일차","label":"창세기 33-36장","url":"https://www.youtube.com/watch?v=s5XW1kNT5fg","group":"1권 2강"},{"type":"audio","tag":"1권 2강 4일차","label":"창세기 37-40장","url":"https://www.youtube.com/watch?v=rjiuSEP36ms","group":"1권 2강"},{"type":"audio","tag":"1권 2강 5일차","label":"창세기 41-45장","url":"https://www.youtube.com/watch?v=h42xu1wCzxo","group":"1권 2강"},{"type":"audio","tag":"1권 2강 6일차","label":"창세기 46-50장","url":"https://www.youtube.com/watch?v=DIxsD_mVWmI","group":"1권 2강"}],"출애굽기":[{"type":"lecture","tag":"3강","label":"출애굽기","url":"https://www.youtube.com/watch?v=nuumvEm2D9M","group":"1권 3강"},{"type":"audio","tag":"1권 3강 1일차","label":"출애굽기 1-6장","url":"https://www.youtube.com/watch?v=JPKIP3j-Vos","group":"1권 3강"},{"type":"audio","tag":"1권 3강 2일차","label":"출애굽기 7-12장","url":"https://www.youtube.com/watch?v=-uPjKdJSC0s","group":"1권 3강"},{"type":"audio","tag":"1권 3강 3일차","label":"출애굽기 13-19장","url":"https://www.youtube.com/watch?v=iC6PbMfPmX0","group":"1권 3강"},{"type":"audio","tag":"1권 3강 4일차","label":"출애굽기 20-26장","url":"https://www.youtube.com/watch?v=cofZEtSnva0","group":"1권 3강"},{"type":"audio","tag":"1권 3강 5일차","label":"출애굽기 27-33장","url":"https://www.youtube.com/watch?v=RfX2yGF5X4k","group":"1권 3강"},{"type":"audio","tag":"1권 3강 6일차","label":"출애굽기 34-40장","url":"https://www.youtube.com/watch?v=F076DA0Tm7Q","group":"1권 3강"}],"레위기":[{"type":"lecture","tag":"4강","label":"레위기","url":"https://www.youtube.com/watch?v=4Ttqlz3qR8Q","group":"1권 4강"},{"type":"audio","tag":"1권 4강 1일차","label":"레위기 1-5장","url":"https://www.youtube.com/watch?v=0cq6RPpu5ng","group":"1권 4강"},{"type":"audio","tag":"1권 4강 2일차","label":"레위기 6-10장","url":"https://www.youtube.com/watch?v=Icl82ovX30M","group":"1권 4강"},{"type":"audio","tag":"1권 4강 3일차","label":"레위기 11-15장","url":"https://www.youtube.com/watch?v=R5cQ2fAx_5I","group":"1권 4강"},{"type":"audio","tag":"1권 4강 4일차","label":"레위기 16-20장","url":"https://www.youtube.com/watch?v=BTSNi2h6BlM","group":"1권 4강"},{"type":"audio","tag":"1권 4강 5일차","label":"레위기 21-25장","url":"https://www.youtube.com/watch?v=kBJgICFgb4Q","group":"1권 4강"},{"type":"audio","tag":"1권 4강 6일차","label":"레위기 26-27장","url":"https://www.youtube.com/watch?v=7bWqSHSy5jU","group":"1권 4강"}],"민수기":[{"type":"lecture","tag":"5강","label":"민수기","url":"https://www.youtube.com/watch?v=ODkCppuCsAA","group":"1권 5강"},{"type":"audio","tag":"1권 5강 1일차","label":"민수기 1-6장","url":"https://www.youtube.com/watch?v=Nett6JjnhWk","group":"1권 5강"},{"type":"audio","tag":"1권 5강 2일차","label":"민수기 7-12장","url":"https://www.youtube.com/watch?v=V2SvqIIlIw8","group":"1권 5강"},{"type":"audio","tag":"1권 5강 3일차","label":"민수기 13-18장","url":"https://www.youtube.com/watch?v=8Iy-7DprbHY","group":"1권 5강"},{"type":"audio","tag":"1권 5강 4일차","label":"민수기 19-24장","url":"https://www.youtube.com/watch?v=PSne7-fwL_c","group":"1권 5강"},{"type":"audio","tag":"1권 5강 5일차","label":"민수기 25-30장","url":"https://www.youtube.com/watch?v=l3KrTK1Ehs0","group":"1권 5강"},{"type":"audio","tag":"1권 5강 6일차","label":"민수기 31-36장","url":"https://www.youtube.com/watch?v=wRBJPo5gzlA","group":"1권 5강"}],"신명기":[{"type":"lecture","tag":"6강","label":"신명기","url":"https://www.youtube.com/watch?v=nrGJvJz9WHI","group":"1권 6강"},{"type":"audio","tag":"1권 6강 1일차","label":"신명기 1-6장","url":"https://www.youtube.com/watch?v=w6F4qXAStbM","group":"1권 6강"},{"type":"audio","tag":"1권 6강 2일차","label":"신명기 7-12장","url":"https://www.youtube.com/watch?v=gTnF7FdiZoY","group":"1권 6강"},{"type":"audio","tag":"1권 6강 3일차","label":"신명기 13-18장","url":"https://www.youtube.com/watch?v=LJi2Yu9oNqs","group":"1권 6강"},{"type":"audio","tag":"1권 6강 4일차","label":"신명기 19-24장","url":"https://www.youtube.com/watch?v=6_saHDzAtJI","group":"1권 6강"},{"type":"audio","tag":"1권 6강 5일차","label":"신명기 25-29장","url":"https://www.youtube.com/watch?v=Kr5oL40KwBE","group":"1권 6강"},{"type":"audio","tag":"1권 6강 6일차","label":"신명기 30-34장","url":"https://www.youtube.com/watch?v=_LRFeW5FLUQ","group":"1권 6강"}],"여호수아":[{"type":"lecture","tag":"7강","label":"여호수아","url":"https://www.youtube.com/watch?v=Eb6jCXeDHCg","group":"1권 7강"},{"type":"audio","tag":"1권 7강 1일차","label":"여호수아 1-4장","url":"https://www.youtube.com/watch?v=m8DtwyjLkiA","group":"1권 7강"},{"type":"audio","tag":"1권 7강 2일차","label":"여호수아 5-8장","url":"https://www.youtube.com/watch?v=-eKMc6hAf7s","group":"1권 7강"},{"type":"audio","tag":"1권 7강 3일차","label":"여호수아 9-12장","url":"https://www.youtube.com/watch?v=BGY0gciC_yY","group":"1권 7강"},{"type":"audio","tag":"1권 7강 4일차","label":"여호수아 13-16장","url":"https://www.youtube.com/watch?v=5N8vUZ119RQ","group":"1권 7강"},{"type":"audio","tag":"1권 7강 5일차","label":"여호수아 17-20장","url":"https://www.youtube.com/watch?v=BfD1DOIsis0","group":"1권 7강"},{"type":"audio","tag":"1권 7강 6일차","label":"여호수아 21-24장","url":"https://www.youtube.com/watch?v=nZGVxZuOFSA","group":"1권 7강"}],"사사기":[{"type":"lecture","tag":"1강","label":"사사기","url":"https://www.youtube.com/watch?v=A4BVjXOnJXY","group":"2권 1강"},{"type":"audio","tag":"2권 1강 1일차","label":"사사기 1-4장","url":"https://www.youtube.com/watch?v=wfKu5-H2Ec4","group":"2권 1강"},{"type":"audio","tag":"2권 1강 2일차","label":"사사기 5-8장","url":"https://www.youtube.com/watch?v=9SseDUx7X5U","group":"2권 1강"},{"type":"audio","tag":"2권 1강 3일차","label":"사사기 9-12장","url":"https://www.youtube.com/watch?v=JUuRgM3qe0g","group":"2권 1강"},{"type":"audio","tag":"2권 1강 4일차","label":"사사기 13-16장","url":"https://www.youtube.com/watch?v=3t0N4f95TCg","group":"2권 1강"},{"type":"audio","tag":"2권 1강 5일차","label":"사사기 17-21장","url":"https://www.youtube.com/watch?v=dbIjnJay1H4","group":"2권 1강"}],"룻기":[{"type":"audio","tag":"2권 1강 6일차","label":"룻기 1-4장","url":"https://www.youtube.com/watch?v=3bcKIosS0nY","group":"2권 1강"}],"사무엘상":[{"type":"lecture","tag":"2강","label":"사무엘상·하 1","url":"https://www.youtube.com/watch?v=YLuWUTeCltc","group":"2권 2강"},{"type":"audio","tag":"2권 2강 1일차","label":"사무엘상 1-5장","url":"https://www.youtube.com/watch?v=m3Fk5UcyIeU","group":"2권 2강"},{"type":"audio","tag":"2권 2강 2일차","label":"사무엘상 6-10장","url":"https://www.youtube.com/watch?v=HL6UU1HuLow","group":"2권 2강"},{"type":"audio","tag":"2권 2강 3일차","label":"사무엘상 11-15장","url":"https://www.youtube.com/watch?v=x0FJYaePp0M","group":"2권 2강"},{"type":"audio","tag":"2권 2강 4일차","label":"사무엘상 16-20장","url":"https://www.youtube.com/watch?v=SCGQMwhDHL4","group":"2권 2강"},{"type":"audio","tag":"2권 2강 5일차","label":"사무엘상 21-25장","url":"https://www.youtube.com/watch?v=IxpJiWP4Yps","group":"2권 2강"},{"type":"audio","tag":"2권 2강 6일차","label":"사무엘상 26-31장","url":"https://www.youtube.com/watch?v=sAyZfp7VEVg","group":"2권 2강"}],"사무엘하":[{"type":"lecture","tag":"3강","label":"사무엘상·하 2","url":"https://www.youtube.com/watch?v=MVQgiGHrMec","group":"2권 3강"},{"type":"audio","tag":"2권 3강 1일차","label":"사무엘하 1-4장","url":"https://www.youtube.com/watch?v=_umuAjksHJs","group":"2권 3강"},{"type":"audio","tag":"2권 3강 2일차","label":"사무엘하 5-8장","url":"https://www.youtube.com/watch?v=Iipgy7L95nA","group":"2권 3강"},{"type":"audio","tag":"2권 3강 3일차","label":"사무엘하 9-12장","url":"https://www.youtube.com/watch?v=f7XKr_bLU_g","group":"2권 3강"},{"type":"audio","tag":"2권 3강 4일차","label":"사무엘하 13-16장","url":"https://www.youtube.com/watch?v=CgcamQMVJZI","group":"2권 3강"},{"type":"audio","tag":"2권 3강 5일차","label":"사무엘하 17-20장","url":"https://www.youtube.com/watch?v=EEqrfrpRQJQ","group":"2권 3강"},{"type":"audio","tag":"2권 3강 6일차","label":"사무엘하 21-24장","url":"https://www.youtube.com/watch?v=80JaUmNYtAw","group":"2권 3강"}],"열왕기상":[{"type":"lecture","tag":"4강","label":"열왕기상·하","url":"https://www.youtube.com/watch?v=OFxFwWNMEjw","group":"2권 4강"},{"type":"audio","tag":"2권 4강 1일차","label":"열왕기상 1-4장","url":"https://www.youtube.com/watch?v=bG5h_xtSWaY","group":"2권 4강"},{"type":"audio","tag":"2권 4강 2일차","label":"열왕기상 5-7장","url":"https://www.youtube.com/watch?v=w84-u7z5wYc","group":"2권 4강"},{"type":"audio","tag":"2권 4강 3일차","label":"열왕기상 8-10장","url":"https://www.youtube.com/watch?v=fZN7MJXWT34","group":"2권 4강"},{"type":"audio","tag":"2권 4강 4일차","label":"열왕기상 11-14장","url":"https://www.youtube.com/watch?v=5NrJ0AsoIvQ","group":"2권 4강"},{"type":"audio","tag":"2권 4강 5일차","label":"열왕기상 15-18장","url":"https://www.youtube.com/watch?v=RhuKWlZfUTg","group":"2권 4강"},{"type":"audio","tag":"2권 4강 6일차","label":"열왕기상 19-22장","url":"https://www.youtube.com/watch?v=wuekqFrtMfc","group":"2권 4강"}],"열왕기하":[{"type":"audio","tag":"2권 4강 7일차","label":"열왕기하 1-4장","url":"https://www.youtube.com/watch?v=LPV2i5xDojI","group":"2권 4강"},{"type":"audio","tag":"2권 4강 8일차","label":"열왕기하 5-8장","url":"https://www.youtube.com/watch?v=4Zok-D_VsEc","group":"2권 4강"},{"type":"audio","tag":"2권 4강 9일차","label":"열왕기하 9-12장","url":"https://www.youtube.com/watch?v=PCFpuWW_iDw","group":"2권 4강"},{"type":"audio","tag":"2권 4강 10일차","label":"열왕기하 13-16장","url":"https://www.youtube.com/watch?v=xVUjUr5ZB3I","group":"2권 4강"},{"type":"audio","tag":"2권 4강 11일차","label":"열왕기하 17-20장","url":"https://www.youtube.com/watch?v=_U4--rwTRTI","group":"2권 4강"},{"type":"audio","tag":"2권 4강 12일차","label":"열왕기하 21-25장","url":"https://www.youtube.com/watch?v=8ipfKD2qpLA","group":"2권 4강"}],"역대상":[{"type":"lecture","tag":"5강","label":"역대상·하","url":"https://www.youtube.com/watch?v=DATMW23HVm4","group":"2권 5강"},{"type":"audio","tag":"2권 5강 1일차","label":"역대상 1-5장","url":"https://www.youtube.com/watch?v=9n44w7p1Wn8","group":"2권 5강"},{"type":"audio","tag":"2권 5강 2일차","label":"역대상 6-10장","url":"https://www.youtube.com/watch?v=jFItIY1TL2I","group":"2권 5강"},{"type":"audio","tag":"2권 5강 3일차","label":"역대상 11-15장","url":"https://www.youtube.com/watch?v=ZrS66ch-qdM","group":"2권 5강"},{"type":"audio","tag":"2권 5강 4일차","label":"역대상 16-20장","url":"https://www.youtube.com/watch?v=oTaV_SmaWz4","group":"2권 5강"},{"type":"audio","tag":"2권 5강 5일차","label":"역대상 21-25장","url":"https://www.youtube.com/watch?v=53lSFUtPRSk","group":"2권 5강"},{"type":"audio","tag":"2권 5강 6일차","label":"역대상 26-29장","url":"https://www.youtube.com/watch?v=4iUsBOq31EU","group":"2권 5강"}],"역대하":[{"type":"audio","tag":"2권 6강 1일차","label":"역대하 1-6장","url":"https://www.youtube.com/watch?v=wW5W6HBNz-4","group":"2권 6강"},{"type":"audio","tag":"2권 6강 2일차","label":"역대하 7-12장","url":"https://www.youtube.com/watch?v=CrdXZDDPl-8","group":"2권 6강"},{"type":"audio","tag":"2권 6강 3일차","label":"역대하 13-18장","url":"https://www.youtube.com/watch?v=XdQ_1kznBuI","group":"2권 6강"},{"type":"audio","tag":"2권 6강 4일차","label":"역대하 19-24장","url":"https://www.youtube.com/watch?v=xyaG6kADAuM","group":"2권 6강"},{"type":"audio","tag":"2권 6강 5일차","label":"역대하 25-30장","url":"https://www.youtube.com/watch?v=8Uq9f4iySis","group":"2권 6강"},{"type":"audio","tag":"2권 6강 6일차","label":"역대하 31-36장","url":"https://www.youtube.com/watch?v=R4rdw-2YVFA","group":"2권 6강"}],"에스라":[{"type":"lecture","tag":"6강","label":"유배기","url":"https://www.youtube.com/watch?v=BxFFHUtlaSM","group":"2권 6강"},{"type":"lecture","tag":"7강","label":"에스라·느헤미야·에스더","url":"https://www.youtube.com/watch?v=MIZFwFNaFkk","group":"2권 7강"},{"type":"audio","tag":"2권 7강 1일차","label":"에스라 1-5장","url":"https://www.youtube.com/watch?v=EIC3DLFp_TQ","group":"2권 7강"},{"type":"audio","tag":"2권 7강 2일차","label":"에스라 6-10장","url":"https://www.youtube.com/watch?v=A4F8KRuRITQ","group":"2권 7강"}],"느헤미야":[{"type":"audio","tag":"2권 7강 3일차","label":"느헤미야 1-6장","url":"https://www.youtube.com/watch?v=ghBlIBUFF24","group":"2권 7강"},{"type":"audio","tag":"2권 7강 4일차","label":"느헤미야 7-13장","url":"https://www.youtube.com/watch?v=TmVNQBZGXwc","group":"2권 7강"}],"에스더":[{"type":"audio","tag":"2권 7강 5일차","label":"에스더 1-5장","url":"https://www.youtube.com/watch?v=LA9iTOtTST4","group":"2권 7강"},{"type":"audio","tag":"2권 7강 6일차","label":"에스더 6-10장","url":"https://www.youtube.com/watch?v=UXOjyTyE9Zg","group":"2권 7강"}],"욥기":[{"type":"lecture","tag":"1강","label":"욥기","url":"https://www.youtube.com/watch?v=py_S7ICqOyQ","group":"3권 1강"},{"type":"audio","tag":"3권 1강 1일차","label":"욥기 1-7장","url":"https://www.youtube.com/watch?v=FPwJiM2Ncgk","group":"3권 1강"},{"type":"audio","tag":"3권 1강 2일차","label":"욥기 8-14장","url":"https://www.youtube.com/watch?v=6omqjyWS7bk","group":"3권 1강"},{"type":"audio","tag":"3권 1강 3일차","label":"욥기 15-21장","url":"https://www.youtube.com/watch?v=QBnwQ7qPDNI","group":"3권 1강"},{"type":"audio","tag":"3권 1강 4일차","label":"욥기 22-28장","url":"https://www.youtube.com/watch?v=tiUutIOYZ_0","group":"3권 1강"},{"type":"audio","tag":"3권 1강 5일차","label":"욥기29-35장","url":"https://www.youtube.com/watch?v=W-5wMIDtB7A","group":"3권 1강"},{"type":"audio","tag":"3권 1강 6일차","label":"욥기 36-42장","url":"https://www.youtube.com/watch?v=1ELa639BZmA","group":"3권 1강"}],"시편":[{"type":"lecture","tag":"2강","label":"시편 1","url":"https://www.youtube.com/watch?v=dDzzD_vu0JI","group":"3권 2강"},{"type":"audio","tag":"3권 2강 1일차","label":"시편 1-6편","url":"https://www.youtube.com/watch?v=Xw9qGXf-IOU","group":"3권 2강"},{"type":"audio","tag":"3권 2강 2일차","label":"시편 7-12편","url":"https://www.youtube.com/watch?v=LdX1VARHxXw","group":"3권 2강"},{"type":"audio","tag":"3권 2강 3일차","label":"시편 13-18편","url":"https://www.youtube.com/watch?v=IPIwioNS0O8","group":"3권 2강"},{"type":"audio","tag":"3권 2강 4일차","label":"시편 19-24편","url":"https://www.youtube.com/watch?v=NncQic7yXHE","group":"3권 2강"},{"type":"audio","tag":"3권 2강 5일차","label":"시편 25-30편","url":"https://www.youtube.com/watch?v=Zy_y7ZmYwzw","group":"3권 2강"},{"type":"audio","tag":"3권 2강 6일차","label":"시편 31-36편","url":"https://www.youtube.com/watch?v=ezKjfZ2UysA","group":"3권 2강"},{"type":"lecture","tag":"3강","label":"시편 2","url":"https://www.youtube.com/watch?v=3js4uGzvsJY","group":"3권 3강"},{"type":"audio","tag":"3권 3강 1일차","label":"시편 37-42편","url":"https://www.youtube.com/watch?v=w3p1BdvvozM","group":"3권 3강"},{"type":"audio","tag":"3권 3강 2일차","label":"시편 43-48편","url":"https://www.youtube.com/watch?v=CytdIciWnbo","group":"3권 3강"},{"type":"audio","tag":"3권 3강 3일차","label":"시편 49-54편","url":"https://www.youtube.com/watch?v=bKww5yEn664","group":"3권 3강"},{"type":"audio","tag":"3권 3강 4일차","label":"시편 55-60편","url":"https://www.youtube.com/watch?v=S7MTRivOyyQ","group":"3권 3강"},{"type":"audio","tag":"3권 3강 5일차","label":"시편 61-66편","url":"https://www.youtube.com/watch?v=7pYpQe8KuP8","group":"3권 3강"},{"type":"audio","tag":"3권 3강 6일차","label":"시편 67-72편","url":"https://www.youtube.com/watch?v=h--0xm2hwF8","group":"3권 3강"},{"type":"lecture","tag":"4강","label":"시편 3","url":"https://www.youtube.com/watch?v=HlB72y13ork","group":"3권 4강"},{"type":"audio","tag":"3권 4강 1일차","label":"시편 73-78편","url":"https://www.youtube.com/watch?v=4wlO6G1R9ug","group":"3권 4강"},{"type":"audio","tag":"3권 4강 2일차","label":"시편 79-84편","url":"https://www.youtube.com/watch?v=Oc_WRPnxF-A","group":"3권 4강"},{"type":"audio","tag":"3권 4강 3일차","label":"시편 85-90편","url":"https://www.youtube.com/watch?v=AGNOadKTsS4","group":"3권 4강"},{"type":"audio","tag":"3권 4강 4일차","label":"시편 91-96편","url":"https://www.youtube.com/watch?v=ic9RpK1aZnE","group":"3권 4강"},{"type":"audio","tag":"3권 4강 5일차","label":"시편 97-102편","url":"https://www.youtube.com/watch?v=r4gpBx-ETOA","group":"3권 4강"},{"type":"audio","tag":"3권 4강 6일차","label":"시편 103-109편","url":"https://www.youtube.com/watch?v=E0MJie7f-TQ","group":"3권 4강"},{"type":"lecture","tag":"5강","label":"시편 4","url":"https://www.youtube.com/watch?v=bDPOFSHgkQA","group":"3권 5강"},{"type":"audio","tag":"3권 5강 1일차","label":"시편 110-115편","url":"https://www.youtube.com/watch?v=X2XmjbE2a7c","group":"3권 5강"},{"type":"audio","tag":"3권 5강 2일차","label":"시편 116-120편","url":"https://www.youtube.com/watch?v=6i94KTjBrxA","group":"3권 5강"},{"type":"audio","tag":"3권 5강 3일차","label":"시편 121-125편","url":"https://www.youtube.com/watch?v=90m_ShatEXE","group":"3권 5강"},{"type":"audio","tag":"3권 5강 4일차","label":"시편 126-130편","url":"https://www.youtube.com/watch?v=oF_jF2rRBVw","group":"3권 5강"},{"type":"audio","tag":"3권 5강 5일차","label":"시편 131-140편","url":"https://www.youtube.com/watch?v=M9MX_Ek-kp8","group":"3권 5강"},{"type":"audio","tag":"3권 5강 6일차","label":"시편 141-150편","url":"https://www.youtube.com/watch?v=V3tF1yRLb4M","group":"3권 5강"}],"잠언":[{"type":"lecture","tag":"6강","label":"잠언","url":"https://www.youtube.com/watch?v=l8uNGDL9T0w","group":"3권 6강"},{"type":"audio","tag":"3권 6강 1일차","label":"잠언 1-5장","url":"https://www.youtube.com/watch?v=ulZK2c7yIkM","group":"3권 6강"},{"type":"audio","tag":"3권 6강 2일차","label":"잠언 6-10장","url":"https://www.youtube.com/watch?v=jsnJwDzQ2Rg","group":"3권 6강"},{"type":"audio","tag":"3권 6강 3일차","label":"잠언 11-15장","url":"https://www.youtube.com/watch?v=zGwCcEZ6XjM","group":"3권 6강"},{"type":"audio","tag":"3권 6강 4일차","label":"잠언 16-20장","url":"https://www.youtube.com/watch?v=E6j8BzscC-o","group":"3권 6강"},{"type":"audio","tag":"3권 6강 5일차","label":"잠언 21-25장","url":"https://www.youtube.com/watch?v=j1Jef03tOsU","group":"3권 6강"},{"type":"audio","tag":"3권 6강 6일차","label":"잠언 26-31장","url":"https://www.youtube.com/watch?v=itMOlhNYgTQ","group":"3권 6강"}],"전도서":[{"type":"lecture","tag":"7강","label":"전도서·아가","url":"https://www.youtube.com/watch?v=QIATHwMWS-I","group":"3권 7강"},{"type":"audio","tag":"3권 7강 1일차","label":"전도서 1-3장","url":"https://www.youtube.com/watch?v=HoL7TfrM4M4","group":"3권 7강"},{"type":"audio","tag":"3권 7강 2일차","label":"전도서 4-6장","url":"https://www.youtube.com/watch?v=42UDIvwwjyc","group":"3권 7강"},{"type":"audio","tag":"3권 7강 3일차","label":"전도서 7-9장","url":"https://www.youtube.com/watch?v=tSHNJ6m2V80","group":"3권 7강"},{"type":"audio","tag":"3권 7강 4일차","label":"전도서 10-12장","url":"https://www.youtube.com/watch?v=-TdmIuHFcO8","group":"3권 7강"}],"아가":[{"type":"audio","tag":"3권 7강 5일차","label":"아가 1-4장","url":"https://www.youtube.com/watch?v=zfF9-cAj0cw","group":"3권 7강"},{"type":"audio","tag":"3권 7강 6일차","label":"아가 5-8장","url":"https://www.youtube.com/watch?v=8QVC1o0_sXo","group":"3권 7강"}],"이사야":[{"type":"lecture","tag":"1강","label":"이사야","url":"https://www.youtube.com/watch?v=kRhEyqzxqUs","group":"4권 1강"},{"type":"audio","tag":"4권 1강 1일차","label":"이사야 1-5장","url":"https://www.youtube.com/watch?v=A_yLNI83VEM","group":"4권 1강"},{"type":"audio","tag":"4권 1강 2일차","label":"이사야 6-10장","url":"https://www.youtube.com/watch?v=EK8lKCq1PH4","group":"4권 1강"},{"type":"audio","tag":"4권 1강 3일차","label":"이사야 11-15장","url":"https://www.youtube.com/watch?v=W7d-0593X_g","group":"4권 1강"},{"type":"audio","tag":"4권 1강 4일차","label":"이사야 16-20장","url":"https://www.youtube.com/watch?v=627wp6ROMiM","group":"4권 1강"},{"type":"audio","tag":"4권 1강 5일차","label":"이사야 21-25장","url":"https://www.youtube.com/watch?v=RoMubNk67b4","group":"4권 1강"},{"type":"audio","tag":"4권 1강 6일차","label":"이사야 26-30장","url":"https://www.youtube.com/watch?v=P4A6x2rW1ss","group":"4권 1강"},{"type":"audio","tag":"4권 1강 7일차","label":"이사야 31-36장","url":"https://www.youtube.com/watch?v=_oaTB8iqjzo","group":"4권 1강"},{"type":"audio","tag":"4권 1강 8일차","label":"이사야 37-42장","url":"https://www.youtube.com/watch?v=XYqfH-y9ZGM","group":"4권 1강"},{"type":"audio","tag":"4권 1강 9일차","label":"이사야 43-48장","url":"https://www.youtube.com/watch?v=-8L9RtzTQ5g","group":"4권 1강"},{"type":"audio","tag":"4권 1강 10일차","label":"이사야 49-54장","url":"https://www.youtube.com/watch?v=AtIeBEK4TuU","group":"4권 1강"},{"type":"audio","tag":"4권 1강 11일차","label":"이사야 55-60장","url":"https://www.youtube.com/watch?v=MniKMG-GR_A","group":"4권 1강"},{"type":"audio","tag":"4권 1강 12일차","label":"이사야 61-66장","url":"https://www.youtube.com/watch?v=Np8hfTONjJM","group":"4권 1강"}],"예레미야":[{"type":"lecture","tag":"2강","label":"예레미야","url":"https://www.youtube.com/watch?v=MBoaA_5sid0","group":"4권 2강"},{"type":"audio","tag":"4권 2강 1일차","label":"예레미야 1-5장","url":"https://www.youtube.com/watch?v=twjCVJc0NHw","group":"4권 2강"},{"type":"audio","tag":"4권 2강 2일차","label":"예레미야 6-10장","url":"https://www.youtube.com/watch?v=3RsXlZU5vO8","group":"4권 2강"},{"type":"audio","tag":"4권 2강 3일차","label":"예레미야 11-15장","url":"https://www.youtube.com/watch?v=hBzfN9omNvE","group":"4권 2강"},{"type":"audio","tag":"4권 2강 4일차","label":"예레미야 16-20장","url":"https://www.youtube.com/watch?v=kKpqMKqbXQs","group":"4권 2강"},{"type":"audio","tag":"4권 2강 5일차","label":"예레미야 21-25장","url":"https://www.youtube.com/watch?v=AR9MXi9FINg","group":"4권 2강"},{"type":"audio","tag":"4권 2강 6일차","label":"예레미야 26-30장","url":"https://www.youtube.com/watch?v=1VFP5MUde4A","group":"4권 2강"},{"type":"audio","tag":"4권 2강 7일차","label":"예레미야 31-35장","url":"https://www.youtube.com/watch?v=ao1t99R9kyo","group":"4권 2강"},{"type":"audio","tag":"4권 2강 8일차","label":"예레미야 36-40장","url":"https://www.youtube.com/watch?v=CepvfrtAOQo","group":"4권 2강"},{"type":"audio","tag":"4권 2강 9일차","label":"예레미야 41-45장","url":"https://www.youtube.com/watch?v=OTJClggBP6Q","group":"4권 2강"},{"type":"audio","tag":"4권 2강 10일차","label":"예레미야 46-50장","url":"https://www.youtube.com/watch?v=PMHLlz7iajk","group":"4권 2강"},{"type":"audio","tag":"4권 2강 11일차","label":"예레미야 51-52장","url":"https://www.youtube.com/watch?v=EoJl2A5o068","group":"4권 2강"}],"예레미야애가":[{"type":"audio","tag":"4권 2강 12일차","label":"예레미야애가 1-5장","url":"https://www.youtube.com/watch?v=gzBKgyBAHnM","group":"4권 2강"}],"에스겔":[{"type":"lecture","tag":"3강","label":"에스겔","url":"https://www.youtube.com/watch?v=t7MwSpxihPk","group":"4권 3강"},{"type":"audio","tag":"4권 3강 1일차","label":"에스겔 1-4장","url":"https://www.youtube.com/watch?v=xSz681JKrCI","group":"4권 3강"},{"type":"audio","tag":"4권 3강 2일차","label":"에스겔 5-8장","url":"https://www.youtube.com/watch?v=L-sRT6Thlio","group":"4권 3강"},{"type":"audio","tag":"4권 3강 3일차","label":"에스겔 9-12장","url":"https://www.youtube.com/watch?v=GiKHb2Rz2Yc","group":"4권 3강"},{"type":"audio","tag":"4권 3강 4일차","label":"에스겔 13-16장","url":"https://www.youtube.com/watch?v=4CfvHMBgQ50","group":"4권 3강"},{"type":"audio","tag":"4권 3강 5일차","label":"에스겔 17-20장","url":"https://www.youtube.com/watch?v=vYd7vUSeTdI","group":"4권 3강"},{"type":"audio","tag":"4권 3강 6일차","label":"에스겔 21-24장","url":"https://www.youtube.com/watch?v=YIGyKVV76Z0","group":"4권 3강"},{"type":"audio","tag":"4권 3강 7일차","label":"에스겔 25-28장","url":"https://www.youtube.com/watch?v=2ota-w7NFJU","group":"4권 3강"},{"type":"audio","tag":"4권 3강 8일차","label":"에스겔 29-32장","url":"https://www.youtube.com/watch?v=_MfZR_e2FPw","group":"4권 3강"},{"type":"audio","tag":"4권 3강 9일차","label":"에스겔 33-36장","url":"https://www.youtube.com/watch?v=SBRaVw0bpkY","group":"4권 3강"},{"type":"audio","tag":"4권 3강 10일차","label":"에스겔 37-40장","url":"https://www.youtube.com/watch?v=Sf0anrSjF4Y","group":"4권 3강"},{"type":"audio","tag":"4권 3강 11일차","label":"에스겔 41-44장","url":"https://www.youtube.com/watch?v=t5wPfb6oI7M","group":"4권 3강"},{"type":"audio","tag":"4권 3강 12일차","label":"에스겔 45-48장","url":"https://www.youtube.com/watch?v=My3WFWI_uCE","group":"4권 3강"}],"다니엘":[{"type":"lecture","tag":"4강","label":"묵시문학과 다니엘","url":"https://www.youtube.com/watch?v=ytn1zktdYzM","group":"4권 4강"},{"type":"audio","tag":"4권 4강 1일차","label":"다니엘 1-4장","url":"https://www.youtube.com/watch?v=lEYgvkpgxmw","group":"4권 4강"},{"type":"audio","tag":"4권 4강 2일차","label":"다니엘 5-8장","url":"https://www.youtube.com/watch?v=4bmC7DWot-4","group":"4권 4강"},{"type":"audio","tag":"4권 4강 3일차","label":"다니엘 9-12장","url":"https://www.youtube.com/watch?v=myTegLDI49E","group":"4권 4강"}],"호세아":[{"type":"lecture","tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw","group":"4권 5강"},{"type":"audio","tag":"4권 4강 4일차","label":"호세아 1-5장","url":"https://www.youtube.com/watch?v=lRn6dwhhWZ8","group":"4권 4강"},{"type":"audio","tag":"4권 4강 5일차","label":"호세아 6-10장","url":"https://www.youtube.com/watch?v=mrtFg8uBm1E","group":"4권 4강"},{"type":"audio","tag":"4권 4강 6일차","label":"호세아 11-14장","url":"https://www.youtube.com/watch?v=ZOgEmfGBa5A","group":"4권 4강"}],"요엘":[{"type":"audio","tag":"4권 5강 1일차","label":"요엘 1-3장 · 아모스 1-3장","url":"https://www.youtube.com/watch?v=8_FoMICdmn4","group":"4권 5강"}],"아모스":[{"type":"audio","tag":"4권 5강 1일차","label":"요엘 1-3장 · 아모스 1-3장","url":"https://www.youtube.com/watch?v=8_FoMICdmn4","group":"4권 5강"},{"type":"audio","tag":"4권 5강 2일차","label":"아모스 4-9장","url":"https://www.youtube.com/watch?v=4oocZF7aqzA","group":"4권 5강"}],"오바댜":[{"type":"audio","tag":"4권 5강 3일차","label":"오바댜 1장 · 요나 1-4장","url":"https://www.youtube.com/watch?v=JuctF_00PWg","group":"4권 5강"}],"요나":[{"type":"audio","tag":"4권 5강 3일차","label":"오바댜 1장 · 요나 1-4장","url":"https://www.youtube.com/watch?v=JuctF_00PWg","group":"4권 5강"}],"미가":[{"type":"audio","tag":"4권 5강 4일차","label":"미가 1-7장","url":"https://www.youtube.com/watch?v=pmxDgl8G7tY","group":"4권 5강"}],"나훔":[{"type":"audio","tag":"4권 5강 5일차","label":"나훔 1-3장 · 하박국 1-3장","url":"https://www.youtube.com/watch?v=NIplsnvvmvk","group":"4권 5강"}],"하박국":[{"type":"audio","tag":"4권 5강 5일차","label":"나훔 1-3장 · 하박국 1-3장","url":"https://www.youtube.com/watch?v=NIplsnvvmvk","group":"4권 5강"}],"스바냐":[{"type":"audio","tag":"4권 5강 6일차","label":"스바냐 1-3장","url":"https://www.youtube.com/watch?v=b6QFWMxZwro","group":"4권 5강"}],"학개":[{"type":"audio","tag":"4권 5강 7일차","label":"학개 1-2장","url":"https://www.youtube.com/watch?v=DiZ2geCyh_w","group":"4권 5강"}],"스가랴":[{"type":"audio","tag":"4권 5강 8일차","label":"스가랴 1-5장","url":"https://www.youtube.com/watch?v=IU6dNOFDBvg","group":"4권 5강"},{"type":"audio","tag":"4권 5강 9일차","label":"스가랴 6-10장","url":"https://www.youtube.com/watch?v=kqgHSjmKTH0","group":"4권 5강"},{"type":"audio","tag":"4권 5강 10일차","label":"스가랴 11-14장","url":"https://www.youtube.com/watch?v=oaLreEdP82o","group":"4권 5강"}],"말라기":[{"type":"audio","tag":"4권 5강 11일차","label":"말라기 1-2장","url":"https://www.youtube.com/watch?v=yTfL0fCCKxc","group":"4권 5강"},{"type":"audio","tag":"4권 5강 12일차","label":"말라기 3-4장","url":"https://www.youtube.com/watch?v=BPeehvX5bro","group":"4권 5강"}],"마태복음":[{"type":"lecture","tag":"1강","label":"복음서 1","url":"https://www.youtube.com/watch?v=aV-7QO8KdnY","group":"5권 1강"},{"type":"lecture","tag":"2강","label":"복음서 2","url":"https://www.youtube.com/watch?v=1AuD1F7RaDw","group":"5권 2강"},{"type":"lecture","tag":"3강","label":"복음서 3","url":"https://www.youtube.com/watch?v=9j9RhkVMoKw","group":"5권 3강"},{"type":"lecture","tag":"4강","label":"복음서 4","url":"https://www.youtube.com/watch?v=7AlFvpeVHXI","group":"5권 4강"},{"type":"audio","tag":"5권 1강 1일차","label":"마태복음 1-3장","url":"https://www.youtube.com/watch?v=s9jhVw2osL0","group":"5권 1강"},{"type":"audio","tag":"5권 1강 2일차","label":"마태복음 4-6장","url":"https://www.youtube.com/watch?v=IqFjhdjnkWc","group":"5권 1강"},{"type":"audio","tag":"5권 1강 3일차","label":"마태복음 7-9장","url":"https://www.youtube.com/watch?v=3Q9Bcg6nEZA","group":"5권 1강"},{"type":"audio","tag":"5권 1강 4일차","label":"마태복음 10-12장","url":"https://www.youtube.com/watch?v=H1hjO5GUw8I","group":"5권 1강"},{"type":"audio","tag":"5권 1강 5일차","label":"마태복음 13-15장","url":"https://www.youtube.com/watch?v=X2gBOqyR6OE","group":"5권 1강"},{"type":"audio","tag":"5권 1강 6일차","label":"마태복음 16-18장","url":"https://www.youtube.com/watch?v=4-DKi4v8o9Y","group":"5권 1강"},{"type":"audio","tag":"5권 2강 1일차","label":"마태복음 19-21장","url":"https://www.youtube.com/watch?v=5GQ7fnv4qPE","group":"5권 2강"},{"type":"audio","tag":"5권 2강 2일차","label":"마태복음 22-24장","url":"https://www.youtube.com/watch?v=nQcJM_iBxM8","group":"5권 2강"},{"type":"audio","tag":"5권 2강 3일차","label":"마태복음 25-28장","url":"https://www.youtube.com/watch?v=-6yPOe7XSLg","group":"5권 2강"}],"마가복음":[{"type":"audio","tag":"5권 2강 4일차","label":"마가복음 1-5장","url":"https://www.youtube.com/watch?v=442IuDO7OCI","group":"5권 2강"},{"type":"audio","tag":"5권 2강 5일차","label":"마가복음 6-10장","url":"https://www.youtube.com/watch?v=G_o3Dvwtxvg","group":"5권 2강"},{"type":"audio","tag":"5권 2강 6일차","label":"마가복음 11-16장","url":"https://www.youtube.com/watch?v=Gc38ZhTAwpY","group":"5권 2강"}],"누가복음":[{"type":"audio","tag":"5권 3강 1일차","label":"누가복음 1-4장","url":"https://www.youtube.com/watch?v=LqJcebvrE1Q","group":"5권 3강"},{"type":"audio","tag":"5권 3강 2일차","label":"누가복음 5-8장","url":"https://www.youtube.com/watch?v=Gy6ZxzlllPg","group":"5권 3강"},{"type":"audio","tag":"5권 3강 3일차","label":"누가복음 9-12장","url":"https://www.youtube.com/watch?v=TTJs88DBvN4","group":"5권 3강"},{"type":"audio","tag":"5권 3강 4일차","label":"누가복음 13-16장","url":"https://www.youtube.com/watch?v=YAJOHz0M7gQ","group":"5권 3강"},{"type":"audio","tag":"5권 3강 5일차","label":"누가복음 17-20장","url":"https://www.youtube.com/watch?v=Eczf1CFUV_I","group":"5권 3강"},{"type":"audio","tag":"5권 3강 6일차","label":"누가복음 21-24장","url":"https://www.youtube.com/watch?v=-FjMTwiOK9I","group":"5권 3강"}],"요한복음":[{"type":"audio","tag":"5권 4강 1일차","label":"요한복음 1-4장","url":"https://www.youtube.com/watch?v=CAUIYpFUwo0","group":"5권 4강"},{"type":"audio","tag":"5권 4강 2일차","label":"요한복음 5-8장","url":"https://www.youtube.com/watch?v=FJIFSrwiqKI","group":"5권 4강"},{"type":"audio","tag":"5권 4강 3일차","label":"요한복음 9-12장","url":"https://www.youtube.com/watch?v=7o00URTOFaQ","group":"5권 4강"},{"type":"audio","tag":"5권 4강 4일차","label":"요한복음 13-16장","url":"https://www.youtube.com/watch?v=yZj6li_cM2I","group":"5권 4강"},{"type":"audio","tag":"5권 4강 5일차","label":"요한복음 17-19장","url":"https://www.youtube.com/watch?v=LE5qadKhywI","group":"5권 4강"},{"type":"audio","tag":"5권 4강 6일차","label":"요한복음 20-21장","url":"https://www.youtube.com/watch?v=assbCpt4gV8","group":"5권 4강"}],"사도행전":[{"type":"lecture","tag":"5강","label":"사도행전 1","url":"https://www.youtube.com/watch?v=ovYiJ_q0aMg","group":"5권 5강"},{"type":"audio","tag":"5권 5강 1일차","label":"사도행전 1-3장","url":"https://www.youtube.com/watch?v=ziuNeYbkrsA","group":"5권 5강"},{"type":"audio","tag":"5권 5강 2일차","label":"사도행전 4-5장","url":"https://www.youtube.com/watch?v=bM1rbSaxHIw","group":"5권 5강"},{"type":"audio","tag":"5권 5강 3일차","label":"사도행전 6-8장","url":"https://www.youtube.com/watch?v=7-sfLQeTPt8","group":"5권 5강"},{"type":"audio","tag":"5권 5강 4일차","label":"사도행전 9-10장","url":"https://www.youtube.com/watch?v=EKezOe95niA","group":"5권 5강"},{"type":"audio","tag":"5권 5강 5일차","label":"사도행전 11-13장","url":"https://www.youtube.com/watch?v=_80aJDapPEI","group":"5권 5강"},{"type":"audio","tag":"5권 5강 6일차","label":"사도행전 14-15장","url":"https://www.youtube.com/watch?v=CLhMkHJd5NE","group":"5권 5강"},{"type":"lecture","tag":"6강","label":"사도행전 2","url":"https://www.youtube.com/watch?v=heD3yyHR77c","group":"5권 6강"},{"type":"audio","tag":"5권 6강 1일차","label":"사도행전 16-18장","url":"https://www.youtube.com/watch?v=ld3gDpnweVo","group":"5권 6강"},{"type":"audio","tag":"5권 6강 2일차","label":"사도행전 19-20장","url":"https://www.youtube.com/watch?v=F1BN5q2p6wo","group":"5권 6강"},{"type":"audio","tag":"5권 6강 3일차","label":"사도행전 21-22장","url":"https://www.youtube.com/watch?v=URxnYDxG_yk","group":"5권 6강"},{"type":"audio","tag":"5권 6강 4일차","label":"사도행전 23-24장","url":"https://www.youtube.com/watch?v=TN_2f9bEqgg","group":"5권 6강"},{"type":"audio","tag":"5권 6강 5일차","label":"사도행전 25-26장","url":"https://www.youtube.com/watch?v=kEPrUKszw50","group":"5권 6강"},{"type":"audio","tag":"5권 6강 6일차","label":"사도행전 27-28장","url":"https://www.youtube.com/watch?v=8Fbig8ZiYPU","group":"5권 6강"}],"로마서":[{"type":"lecture","tag":"7강","label":"로마서","url":"https://www.youtube.com/watch?v=cUYgRHn7lOk","group":"5권 7강"},{"type":"audio","tag":"5권 7강 1일차","label":"로마서 1-3장","url":"https://www.youtube.com/watch?v=gJA-SvlQ0yw","group":"5권 7강"},{"type":"audio","tag":"5권 7강 2일차","label":"로마서 4-6장","url":"https://www.youtube.com/watch?v=-CBOqCG5vko","group":"5권 7강"},{"type":"audio","tag":"5권 7강 3일차","label":"로마서 7-8장","url":"https://www.youtube.com/watch?v=_BQoYxEfN70","group":"5권 7강"},{"type":"audio","tag":"5권 7강 4일차","label":"로마서 9-11장","url":"https://www.youtube.com/watch?v=wiKsSOALXI4","group":"5권 7강"},{"type":"audio","tag":"5권 7강 5일차","label":"로마서 12-14장","url":"https://www.youtube.com/watch?v=fKQq17CkZxY","group":"5권 7강"},{"type":"audio","tag":"5권 7강 6일차","label":"로마서 15-16장","url":"https://www.youtube.com/watch?v=lJ3d35qUNco","group":"5권 7강"}],"고린도전서":[{"type":"lecture","tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE","group":"6권 1강"},{"type":"lecture","tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ","group":"6권 2강"},{"type":"lecture","tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE","group":"6권 3강"},{"type":"audio","tag":"6권 1강 1일차","label":"고린도전서 1-4장","url":"https://www.youtube.com/watch?v=bwJKUVMkeBY","group":"6권 1강"},{"type":"audio","tag":"6권 1강 2일차","label":"고린도전서 5-8장","url":"https://www.youtube.com/watch?v=R6oO73_leUo","group":"6권 1강"},{"type":"audio","tag":"6권 1강 3일차","label":"고린도전서 9-12장","url":"https://www.youtube.com/watch?v=UfFj8mucrWY","group":"6권 1강"},{"type":"audio","tag":"6권 1강 4일차","label":"고린도전서 13-16장","url":"https://www.youtube.com/watch?v=Y3aWssyHWD0","group":"6권 1강"}],"고린도후서":[{"type":"audio","tag":"6권 1강 5일차","label":"고린도후서 1-3장","url":"https://www.youtube.com/watch?v=i8UT_qVa1zU","group":"6권 1강"},{"type":"audio","tag":"6권 1강 6일차","label":"고린도후서 4-6장","url":"https://www.youtube.com/watch?v=Y8OkR-Lhogs","group":"6권 1강"},{"type":"audio","tag":"6권 2강 1일차","label":"고린도후서 7-9장","url":"https://www.youtube.com/watch?v=CXn-S993CMo","group":"6권 2강"},{"type":"audio","tag":"6권 2강 2일차","label":"고린도후서 10-13장","url":"https://www.youtube.com/watch?v=1tyqxbo59cA","group":"6권 2강"}],"갈라디아서":[{"type":"audio","tag":"6권 2강 3일차","label":"갈라디아서 1-6장","url":"https://www.youtube.com/watch?v=FfAXSKCSOho","group":"6권 2강"}],"에베소서":[{"type":"audio","tag":"6권 2강 4일차","label":"에베소서 1-3장","url":"https://www.youtube.com/watch?v=8xkHZcoOC6A","group":"6권 2강"},{"type":"audio","tag":"6권 2강 5일차","label":"에베소서 4-6장","url":"https://www.youtube.com/watch?v=61UAt8wOGgw","group":"6권 2강"}],"빌립보서":[{"type":"audio","tag":"6권 2강 6일차","label":"빌립보서 1-4장","url":"https://www.youtube.com/watch?v=7DBVGiGtX_c","group":"6권 2강"}],"골로새서":[{"type":"audio","tag":"6권 3강 1일차","label":"골로새서 1-4장","url":"https://www.youtube.com/watch?v=r3tUIl-BsjM","group":"6권 3강"}],"데살로니가전서":[{"type":"audio","tag":"6권 3강 2일차","label":"데살로니가전서 1-5장","url":"https://www.youtube.com/watch?v=9gFYfA5wpoA","group":"6권 3강"}],"데살로니가후서":[{"type":"audio","tag":"6권 3강 3일차","label":"데살로니가후서 1-3장","url":"https://www.youtube.com/watch?v=DNXNmGFS-wE","group":"6권 3강"}],"디모데전서":[{"type":"audio","tag":"6권 3강 4일차","label":"디모데전서 1-6장","url":"https://www.youtube.com/watch?v=vpmjgzwTBfA","group":"6권 3강"}],"디모데후서":[{"type":"audio","tag":"6권 3강 5일차","label":"디모데후서 1-4장","url":"https://www.youtube.com/watch?v=-8-6Q7SFl-Y","group":"6권 3강"}],"디도서":[{"type":"audio","tag":"6권 3강 6일차","label":"디도서 1-3장 · 빌레몬서 1장","url":"https://www.youtube.com/watch?v=kRLZJHZVanU","group":"6권 3강"}],"빌레몬서":[{"type":"audio","tag":"6권 3강 6일차","label":"디도서 1-3장 · 빌레몬서 1장","url":"https://www.youtube.com/watch?v=kRLZJHZVanU","group":"6권 3강"}],"히브리서":[{"type":"lecture","tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc","group":"6권 4강"},{"type":"lecture","tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM","group":"6권 5강"},{"type":"audio","tag":"6권 4강 1일차","label":"히브리서 1-3장","url":"https://www.youtube.com/watch?v=agTY7-xNSO4","group":"6권 4강"},{"type":"audio","tag":"6권 4강 2일차","label":"히브리서 4-6장","url":"https://www.youtube.com/watch?v=2jaQj22u9lI","group":"6권 4강"},{"type":"audio","tag":"6권 4강 3일차","label":"히브리서 7-9장","url":"https://www.youtube.com/watch?v=ajSFL3_ajrU","group":"6권 4강"},{"type":"audio","tag":"6권 4강 4일차","label":"히브리서 10-13장","url":"https://www.youtube.com/watch?v=wSWzAufJvEk","group":"6권 4강"}],"야고보서":[{"type":"audio","tag":"6권 4강 5일차","label":"야고보서 1-3장","url":"https://www.youtube.com/watch?v=PAq7E72ycLE","group":"6권 4강"},{"type":"audio","tag":"6권 4강 6일차","label":"야고보서 4-5장","url":"https://www.youtube.com/watch?v=WTguKGFI3qM","group":"6권 4강"}],"베드로전서":[{"type":"audio","tag":"6권 5강 1일차","label":"베드로전서 1-5장","url":"https://www.youtube.com/watch?v=mSKi4eyTmIE","group":"6권 5강"}],"베드로후서":[{"type":"audio","tag":"6권 5강 2일차","label":"베드로후서 1-3장","url":"https://www.youtube.com/watch?v=xOo0-cEQ1oY","group":"6권 5강"}],"요한일서":[{"type":"audio","tag":"6권 5강 3일차","label":"요한일서 1-3장","url":"https://www.youtube.com/watch?v=_mHynj50bGY","group":"6권 5강"},{"type":"audio","tag":"6권 5강 4일차","label":"요한일서 4-5장","url":"https://www.youtube.com/watch?v=OIelTSvF-WU","group":"6권 5강"}],"요한이서":[{"type":"audio","tag":"6권 5강 5일차","label":"요한이서 1장 · 요한삼서 1장","url":"https://www.youtube.com/watch?v=B2QsQvhZHoM","group":"6권 5강"}],"요한삼서":[{"type":"audio","tag":"6권 5강 5일차","label":"요한이서 1장 · 요한삼서 1장","url":"https://www.youtube.com/watch?v=B2QsQvhZHoM","group":"6권 5강"}],"유다서":[{"type":"audio","tag":"6권 5강 6일차","label":"유다서 1장","url":"https://www.youtube.com/watch?v=GsVozmA1vFU","group":"6권 5강"}],"요한계시록":[{"type":"lecture","tag":"6강","label":"요한계시록 1","url":"https://www.youtube.com/watch?v=imWjNPHxDyc","group":"6권 6강"},{"type":"audio","tag":"6권 6강 1일차","label":"요한계시록 1장","url":"https://www.youtube.com/watch?v=05jma4atSKc","group":"6권 6강"},{"type":"audio","tag":"6권 6강 2일차","label":"요한계시록 2-3장","url":"https://www.youtube.com/watch?v=8mSiKwEL8YQ","group":"6권 6강"},{"type":"audio","tag":"6권 6강 3일차","label":"요한계시록 4-5장","url":"https://www.youtube.com/watch?v=EaprKEP7ISY","group":"6권 6강"},{"type":"audio","tag":"6권 6강 4일차","label":"요한계시록 6-7장","url":"https://www.youtube.com/watch?v=GYT8b2zTONw","group":"6권 6강"},{"type":"audio","tag":"6권 6강 5일차","label":"요한계시록 8-9장","url":"https://www.youtube.com/watch?v=e3VgIQW8lic","group":"6권 6강"},{"type":"audio","tag":"6권 6강 6일차","label":"요한계시록 10-11장","url":"https://www.youtube.com/watch?v=iL_pCrezCcE","group":"6권 6강"},{"type":"lecture","tag":"7강","label":"요한계시록 2","url":"https://www.youtube.com/watch?v=7hQSOYCETPE","group":"6권 7강"},{"type":"audio","tag":"6권 7강 1일차","label":"요한계시록 12-13장","url":"https://www.youtube.com/watch?v=0RC88Z6thWk","group":"6권 7강"},{"type":"audio","tag":"6권 7강 2일차","label":"요한계시록 14-15장","url":"https://www.youtube.com/watch?v=BGalmVwkYiM","group":"6권 7강"},{"type":"audio","tag":"6권 7강 3일차","label":"요한계시록 16-17장","url":"https://www.youtube.com/watch?v=DoTn90cZCWg","group":"6권 7강"},{"type":"audio","tag":"6권 7강 4일차","label":"요한계시록 18-19장","url":"https://www.youtube.com/watch?v=7I3wqAKwnIg","group":"6권 7강"},{"type":"audio","tag":"6권 7강 5일차","label":"요한계시록 20-21장","url":"https://www.youtube.com/watch?v=y3HsExGTcWo","group":"6권 7강"},{"type":"audio","tag":"6권 7강 6일차","label":"요한계시록 22장","url":"https://www.youtube.com/watch?v=urNbAm_yuvY","group":"6권 7강"}]}</script>
+<script id="intro-data" type="application/json">{"ot":{"type":"lecture","tag":"도입","label":"구약개관","url":"https://www.youtube.com/watch?v=obvBe-eO498","group":"1권 도입"},"nt":null}</script>
+<script id="crossref-data" type="application/json">{"열왕기하":{"host":"열왕기상","items":[{"tag":"4강","label":"열왕기상·하","url":"https://www.youtube.com/watch?v=OFxFwWNMEjw"}]},"역대하":{"host":"역대상","items":[{"tag":"5강","label":"역대상·하","url":"https://www.youtube.com/watch?v=DATMW23HVm4"}]},"느헤미야":{"host":"에스라","items":[{"tag":"7강","label":"에스라·느헤미야·에스더","url":"https://www.youtube.com/watch?v=MIZFwFNaFkk"}]},"에스더":{"host":"에스라","items":[{"tag":"7강","label":"에스라·느헤미야·에스더","url":"https://www.youtube.com/watch?v=MIZFwFNaFkk"}]},"아가":{"host":"전도서","items":[{"tag":"7강","label":"전도서·아가","url":"https://www.youtube.com/watch?v=QIATHwMWS-I"}]},"요엘":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"아모스":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"오바댜":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"요나":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"미가":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"나훔":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"하박국":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"스바냐":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"학개":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"스가랴":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"말라기":{"host":"호세아","items":[{"tag":"5강","label":"소선지서","url":"https://www.youtube.com/watch?v=4jdhnOw9rLw"}]},"마가복음":{"host":"마태복음","items":[{"tag":"1강","label":"복음서 1","url":"https://www.youtube.com/watch?v=aV-7QO8KdnY"},{"tag":"2강","label":"복음서 2","url":"https://www.youtube.com/watch?v=1AuD1F7RaDw"},{"tag":"3강","label":"복음서 3","url":"https://www.youtube.com/watch?v=9j9RhkVMoKw"},{"tag":"4강","label":"복음서 4","url":"https://www.youtube.com/watch?v=7AlFvpeVHXI"}]},"누가복음":{"host":"마태복음","items":[{"tag":"1강","label":"복음서 1","url":"https://www.youtube.com/watch?v=aV-7QO8KdnY"},{"tag":"2강","label":"복음서 2","url":"https://www.youtube.com/watch?v=1AuD1F7RaDw"},{"tag":"3강","label":"복음서 3","url":"https://www.youtube.com/watch?v=9j9RhkVMoKw"},{"tag":"4강","label":"복음서 4","url":"https://www.youtube.com/watch?v=7AlFvpeVHXI"}]},"요한복음":{"host":"마태복음","items":[{"tag":"1강","label":"복음서 1","url":"https://www.youtube.com/watch?v=aV-7QO8KdnY"},{"tag":"2강","label":"복음서 2","url":"https://www.youtube.com/watch?v=1AuD1F7RaDw"},{"tag":"3강","label":"복음서 3","url":"https://www.youtube.com/watch?v=9j9RhkVMoKw"},{"tag":"4강","label":"복음서 4","url":"https://www.youtube.com/watch?v=7AlFvpeVHXI"}]},"고린도후서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"갈라디아서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"에베소서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"빌립보서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"골로새서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"데살로니가전서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"데살로니가후서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"디모데전서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"디모데후서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"디도서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"빌레몬서":{"host":"고린도전서","items":[{"tag":"1강","label":"바울 서신 1","url":"https://www.youtube.com/watch?v=w6Zsa0LU7AE"},{"tag":"2강","label":"바울 서신 2","url":"https://www.youtube.com/watch?v=aP08iEL7vdQ"},{"tag":"3강","label":"바울 서신 3","url":"https://www.youtube.com/watch?v=IvcfBnhTAGE"}]},"야고보서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]},"베드로전서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]},"베드로후서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]},"요한일서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]},"요한이서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]},"요한삼서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]},"유다서":{"host":"히브리서","items":[{"tag":"4강","label":"일반 서신 1","url":"https://www.youtube.com/watch?v=9coXCovH_Kc"},{"tag":"5강","label":"일반 서신 2","url":"https://www.youtube.com/watch?v=yxTmK4m2ekM"}]}}</script>
+<script id="full-data" type="application/json">{"구약":[{"tag":"전체듣기","label":"창세기","url":"https://www.youtube.com/watch?v=YslfYAunGF4","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 창세기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"출애굽기","url":"https://www.youtube.com/watch?v=qN0W1g2wpmk","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 출애굽기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"레위기","url":"https://www.youtube.com/watch?v=aNfORJBLB2A","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 레위기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"민수기","url":"https://www.youtube.com/watch?v=qOBhFgIZ3Tk","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 민수기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"신명기","url":"https://www.youtube.com/watch?v=6fsKTuERfsA","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 신명기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"여호수아","url":"https://www.youtube.com/watch?v=W8Kw1czAUxM","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 여호수아 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"사사기","url":"https://www.youtube.com/watch?v=9M65n6oTVEg","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 사사기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"룻기","url":"https://www.youtube.com/watch?v=3GKy-lXaQ-k","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 룻기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"사무엘상","url":"https://www.youtube.com/watch?v=9nsQ6akxJs0","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 사무엘상 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"사무엘하","url":"https://www.youtube.com/watch?v=JEwnswESFSQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 사무엘하 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"열왕기상","url":"https://www.youtube.com/watch?v=HinePX2g-Hg","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 열왕기상 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"열왕기하","url":"https://www.youtube.com/watch?v=KIAf7EE56uE","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 열왕기하 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"역대상","url":"https://www.youtube.com/watch?v=HQMQYzAR8EI","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 역대상 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"역대하","url":"https://www.youtube.com/watch?v=mua2QLtISAg","full":"역대하그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 역대하 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"에스라","url":"https://www.youtube.com/watch?v=Cgb5uaDsfAU","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 에스라 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"느헤미야","url":"https://www.youtube.com/watch?v=53aRv0XhO1Y","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 느헤미야 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"에스더","url":"https://www.youtube.com/watch?v=zNIOzuOmKsQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 에스더 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"욥기","url":"https://www.youtube.com/watch?v=Z_IM_IAuRPA","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 욥기 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"시편","url":"https://www.youtube.com/watch?v=qj_jm0vhke0","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 시편 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"잠언","url":"https://www.youtube.com/watch?v=Cxi0R4GG3hQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 잠언 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"전도서","url":"https://www.youtube.com/watch?v=OY6luR7SxBc","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 전도서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"아가","url":"https://www.youtube.com/watch?v=uMbP4PfwVvo","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 아가 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"이사야","url":"https://www.youtube.com/watch?v=1-os3Qkco_o","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 이사야 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"예레미야","url":"https://www.youtube.com/watch?v=YnakQPEFQro","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 예레미야 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"예레미야애가","url":"https://www.youtube.com/watch?v=byuhDyedV0A","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 예레미야애가 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"에스겔","url":"https://www.youtube.com/watch?v=7Ensrp9S78Q","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 에스겔 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"다니엘","url":"https://www.youtube.com/watch?v=GZ4fcwS-Bmc","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 다니엘 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"호세아","url":"https://www.youtube.com/watch?v=_DXCIXiXvYo","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 호세아 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요엘","url":"https://www.youtube.com/watch?v=VKKjR1envxI","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요엘 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"아모스","url":"https://www.youtube.com/watch?v=nMyN1I1P0VE","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 아모스 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"오바댜","url":"https://www.youtube.com/watch?v=XhvDq2SjToA","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 오바댜 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요나","url":"https://www.youtube.com/watch?v=4n_AhDCmhDQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요나 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"미가","url":"https://www.youtube.com/watch?v=l-PYOpWJMT0","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 미가 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"나훔","url":"https://www.youtube.com/watch?v=AYJUEENJRcM","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 나훔 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"하박국","url":"https://www.youtube.com/watch?v=-y7Lh2OeSg4","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 하박국 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"스바냐","url":"https://www.youtube.com/watch?v=ydwcdTnRvzo","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 스바냐 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"학개","url":"https://www.youtube.com/watch?v=XCGxH3ddNaU","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 학개 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"스가랴","url":"https://www.youtube.com/watch?v=_HsadivCyD0","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 스가랴 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"말라기","url":"https://www.youtube.com/watch?v=xAGw9Qq1DPQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 말라기 전체 듣기 | 성경통독"}],"신약":[{"tag":"전체듣기","label":"마태복음","url":"https://www.youtube.com/watch?v=BVeLcCN-s44","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 마태복음 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"마가복음","url":"https://www.youtube.com/watch?v=tjNdakN-9ow","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 마가복음 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"누가복음","url":"https://www.youtube.com/watch?v=bnA4GtAhZfY","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 누가복음 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"사도행전","url":"https://www.youtube.com/watch?v=E6QJcLY3U_4","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 사도행전 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요한복음","url":"https://www.youtube.com/watch?v=QA2yfSHINQI","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요한복음 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"로마서","url":"https://www.youtube.com/watch?v=o05B91EbIuk","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 로마서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"고린도전서","url":"https://www.youtube.com/watch?v=yg4yJa8J9fc","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 고린도전서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"고린도후서","url":"https://www.youtube.com/watch?v=rOHVu3jJxZs","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 고린도후서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"갈라디아서","url":"https://www.youtube.com/watch?v=Sqd0eMIcQr4","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 갈라디아서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"에베소서","url":"https://www.youtube.com/watch?v=Kpnz5O_Nfb8","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 에베소서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"빌립보서","url":"https://www.youtube.com/watch?v=VmMavKHk2Wk","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 빌립보서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"골로새서","url":"https://www.youtube.com/watch?v=xYgVlKl3FqE","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 골로새서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"데살로니가전서","url":"https://www.youtube.com/watch?v=OeA0Ir3Aams","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 데살로니가전서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"데살로니가후서","url":"https://www.youtube.com/watch?v=qo5zexZrrHg","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 데살로니가후서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"디모데전서","url":"https://www.youtube.com/watch?v=ENfT5jL4uhQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 디모데전서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"디모데후서","url":"https://www.youtube.com/watch?v=3EUrctAYaYU","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 디모데후서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"디도서","url":"https://www.youtube.com/watch?v=mdUW2Ms75fY","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 디도서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"빌레몬서","url":"https://www.youtube.com/watch?v=KY1QIXSWBs0","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 빌레몬서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"히브리서","url":"https://www.youtube.com/watch?v=aAh92CX-1Uc","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 히브리서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"야고보서","url":"https://www.youtube.com/watch?v=wvBdcAvGEB8","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 야고보서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"베드로전서","url":"https://www.youtube.com/watch?v=GsNuHCPixmQ","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 베드로전서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"베드로후서","url":"https://www.youtube.com/watch?v=ou7ktr2Fq8w","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 베드로후서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요한일서","url":"https://www.youtube.com/watch?v=qTvIQMG0Ptk","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요한일서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요한이서","url":"https://www.youtube.com/watch?v=T-5G9crbKEA","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요한이서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요한삼서","url":"https://www.youtube.com/watch?v=OKPxTJ7DVEk","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요한삼서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"유다서","url":"https://www.youtube.com/watch?v=AjqK5yIop_o","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 유다서 전체 듣기 | 성경통독"},{"tag":"전체듣기","label":"요한계시록","url":"https://www.youtube.com/watch?v=exI_04zlXWE","full":"그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 요한계시록 전체 듣기 | 성경통독"}]}</script>
+<script>
+(function(){
+  var BOOKS = JSON.parse(document.getElementById('book-data').textContent);
+  var INTRO = JSON.parse(document.getElementById('intro-data').textContent);
+  var CROSSREF = JSON.parse(document.getElementById('crossref-data').textContent);
+  var FULLS = JSON.parse(document.getElementById('full-data').textContent);
+
+  var ot = ["창세기","출애굽기","레위기","민수기","신명기","여호수아","사사기","룻기","사무엘상","사무엘하","열왕기상","열왕기하","역대상","역대하","에스라","느헤미야","에스더","욥기","시편","잠언","전도서","아가","이사야","예레미야","예레미야애가","에스겔","다니엘","호세아","요엘","아모스","오바댜","요나","미가","나훔","하박국","스바냐","학개","스가랴","말라기"];
+  var nt = ["마태복음","마가복음","누가복음","요한복음","사도행전","로마서","고린도전서","고린도후서","갈라디아서","에베소서","빌립보서","골로새서","데살로니가전서","데살로니가후서","디모데전서","디모데후서","디도서","빌레몬서","히브리서","야고보서","베드로전서","베드로후서","요한일서","요한이서","요한삼서","유다서","요한계시록"];
+
+  var fullMeta = [
+    {vol:"구약", title:"창세기 ~ 말라기", range:"39권 · 책 단위 전체듣기", playlist:"https://www.youtube.com/playlist?list=PL68UlTaS5lt8X0EqkQh8ZgNJp0hfleNVV"},
+    {vol:"신약", title:"마태복음 ~ 요한계시록", range:"27권 · 책 단위 전체듣기", playlist:"https://www.youtube.com/playlist?list=PL68UlTaS5lt9IsvbVw0LySdmyHoGj5XeO"}
+  ];
+
+  var linkSvg = '<svg class="video-link-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 15L15 5M15 5H7M15 5V13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var chevSvg = '<svg class="chev" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 4l7 6-7 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function renderRows(items, showLessonHeads){
+    var html = '';
+    var lastGroup = null;
+    items.forEach(function(it){
+      if (showLessonHeads && it.group && it.group !== lastGroup){
+        html += '<div class="lesson-head">'+esc(it.group)+'</div>';
+        lastGroup = it.group;
+      }
+      var isLecture = it.type === 'lecture';
+      html += (
+        '<a class="video-row'+(isLecture?' is-lecture':'')+'" href="'+it.url+'" target="_blank" rel="noopener">'+
+          '<span class="video-tag">'+esc(it.tag||'')+'</span>'+
+          '<span class="video-label">'+esc(it.label)+'</span>'+
+          (isLecture ? '<span class="video-kind">해설</span>' : '')+
+          linkSvg+
+        '</a>'
+      );
+    });
+    return html;
+  }
+
+  function renderBookSection(){
+    var mount = document.getElementById('book-list');
+    var html = '';
+    [['구약', ot], ['신약', nt]].forEach(function(pair){
+      var label = pair[0], list = pair[1];
+      html += '<div class="testament-head">'+label+' ('+list.length+'권)</div>';
+      var introKey = (label === '구약') ? 'ot' : 'nt';
+      var intro = INTRO[introKey];
+      if (intro){
+        html += (
+          '<a class="intro-row" href="'+intro.url+'" target="_blank" rel="noopener">'+
+            '<span class="intro-badge">해설 · 개관</span>'+
+            '<span class="intro-title">'+esc(intro.label)+'</span>'+
+            linkSvg+
+          '</a>'
+        );
+      } else {
+        html += '<div class="intro-missing">'+label+' 전체를 개관하는 별도 해설영상은 채널에 없습니다.</div>';
+      }
+      html += '<div class="vol-list">';
+      list.forEach(function(book){
+        var items = BOOKS[book] || [];
+        var lecCount = items.filter(function(x){return x.type==='lecture';}).length;
+        var audCount = items.filter(function(x){return x.type==='audio';}).length;
+        var xref = CROSSREF[book];
+        var xrefHtml = '';
+        if (lecCount === 0 && xref){
+          xrefHtml += '<div class="crossref-note"><div class="crossref-head">이 책의 해설영상은 <b>'+esc(xref.host)+'</b>에서 함께 다룹니다</div>';
+          xref.items.forEach(function(it){
+            xrefHtml += '<a class="crossref-link" href="'+it.url+'" target="_blank" rel="noopener">'+esc(it.label)+' '+linkSvg+'</a>';
+          });
+          xrefHtml += '</div>';
+        }
+        html += (
+          '<details class="vol">'+
+            '<summary class="vol-head">'+
+              chevSvg+
+              '<span class="book-title">'+esc(book)+'</span>'+
+              (lecCount ? '<span class="lec-pill">해설 '+lecCount+'</span>' : (xref ? '<span class="lec-pill" style="opacity:.7;">해설 참고</span>' : ''))+
+              '<span class="vol-count">오디오 '+audCount+'개</span>'+
+            '</summary>'+
+            '<div class="video-list">'+xrefHtml+renderRows(items, true)+'</div>'+
+          '</details>'
+        );
+      });
+      html += '</div>';
+    });
+    mount.innerHTML = html;
+  }
+
+  function renderFullSection(){
+    var mount = document.getElementById('full-list');
+    var html = fullMeta.map(function(m){
+      var items = FULLS[m.vol] || [];
+      return (
+        '<details class="vol">'+
+          '<summary class="vol-head">'+
+            chevSvg+
+            '<span class="book-title">'+esc(m.title)+'</span>'+
+            '<span class="vol-count">'+items.length+'개</span>'+
+            '<a class="lec-pill" style="color:var(--gold-strong);background:var(--gold-tint);" href="'+m.playlist+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">재생목록 ↗</a>'+
+          '</summary>'+
+          '<div class="video-list">'+renderRows(items.map(function(x){return Object.assign({type:'audio'}, x);}), false)+'</div>'+
+        '</details>'
+      );
+    }).join('');
+    mount.innerHTML = html;
+  }
+
+  renderBookSection();
+  renderFullSection();
+})();
+</script>
+
+</body>
+</html>
