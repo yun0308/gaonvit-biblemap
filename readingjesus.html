@@ -10,6 +10,7 @@
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -396,6 +397,8 @@
 <body>
 
 
+
+
 <div class="wrap">
 
   <header class="page">
@@ -526,7 +529,7 @@
           xrefHtml += '</div>';
         }
         html += (
-          '<details class="vol">'+
+          '<details class="vol" id="book-'+book+'">'+
             '<summary class="vol-head">'+
               chevSvg+
               '<span class="book-title">'+esc(book)+'</span>'+
@@ -563,8 +566,25 @@
 
   renderBookSection();
   renderFullSection();
+
+  function openFromHash(){
+    var h = decodeURIComponent(location.hash.replace(/^#/, ''));
+    if (!h) return;
+    var target = document.getElementById(h);
+    if (!target) return;
+    target.open = true;
+    requestAnimationFrame(function(){
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+      target.style.transition = 'box-shadow .3s ease';
+      target.style.boxShadow = '0 0 0 3px var(--gold)';
+      setTimeout(function(){ target.style.boxShadow = ''; }, 1800);
+    });
+  }
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
 })();
 </script>
+
 
 </body>
 </html>
