@@ -208,6 +208,10 @@ button{cursor:pointer;border:none;background:none}
   content:"";position:absolute;top:2px;right:2px;
   width:4px;height:4px;border-radius:50%;background:var(--navy-soft);
 }
+.legend i.lg-rj{
+  border-radius:50%;background:var(--read-bg);color:var(--gold);
+  display:inline-flex;align-items:center;justify-content:center;
+}
 
 /* ===== 책 그룹 ===== */
 .group-title{
@@ -274,14 +278,9 @@ button{cursor:pointer;border:none;background:none}
   transition:background .12s,border-color .12s,transform .1s;
 }
 .ch:active{transform:scale(.9)}
-/* 현재 활동(로그인 시 선택한 모드)은 채우기, 다른 활동은 테두리만 */
+/* 현재 활동(로그인 시 선택한 모드)의 완료 여부만 단순 체크로 표시 */
 body.mode-read .ch[data-s="primary"]{background:var(--navy);border-color:var(--navy);color:var(--cream);font-weight:700}
-body.mode-read .ch[data-s="secondary"]{background:#F5F1E6;border:1.4px solid #DCC694;color:#9A8354;font-weight:600}
-body.mode-read .ch[data-s="both"]{background:var(--navy);border:2px solid var(--gold);color:var(--cream);font-weight:700}
-
 body.mode-write .ch[data-s="primary"]{background:var(--gold);border-color:var(--gold);color:#4A3B14;font-weight:700}
-body.mode-write .ch[data-s="secondary"]{background:#F5F1E6;border:1.4px solid #A9B4C6;color:var(--navy-soft);font-weight:600}
-body.mode-write .ch[data-s="both"]{background:var(--gold);border:2px solid var(--navy);color:#4A3B14;font-weight:700}
 
 .ch.has-sermon::after{
   content:"";position:absolute;top:-2px;right:-2px;
@@ -696,14 +695,10 @@ function updateHeaderTexts(){
   document.body.classList.add('mode-' + S.mode);
 
   const primaryColor = S.mode==='read' ? 'var(--navy)' : 'var(--gold)';
-  const secondaryColor = S.mode==='read' ? 'var(--gold)' : 'var(--navy)';
-  const secondarySoft = S.mode==='read' ? '#DCC694' : '#A9B4C6';
-  const secondaryKor = S.mode==='read' ? '필사' : '읽기';
   $('#legend').innerHTML = `
     <span><i style="background:${primaryColor}"></i>${modeKor}완료</span>
-    <span><i style="background:#F5F1E6;box-shadow:inset 0 0 0 1.4px ${secondarySoft}"></i>${secondaryKor}만 완료</span>
-    <span><i style="background:${primaryColor};box-shadow:inset 0 0 0 2px ${secondaryColor}"></i>둘 다 완료</span>
     <span><i class="lg-dot"></i>설교 있는 장</span>
+    <span><i class="lg-rj"><svg viewBox="0 0 24 24" width="10" height="10"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>리딩지저스</span>
   `;
 
   $('#who-eyebrow').textContent = S.guest ? '가온빛교회 · 둘러보기' : `가온빛교회 · ${S.name}`;
@@ -923,17 +918,12 @@ function stateOf(bookId, ch){
   return '';
 }
 
-/* 화면 표시용: 로그인 시 고른 활동(모드)을 기준으로 채우기/테두리를 정한다.
-   현재 모드 활동 = 채우기, 반대 활동 = 테두리만 */
+/* 화면 표시용: 로그인 시 고른 활동(모드)의 완료 여부만 단순 체크로 보여준다. */
 function displayState(bookId, ch){
   const st = (S.progress[bookId]||{})[ch];
   if(!st) return '';
   const primaryOn = S.mode==='read' ? st.read : st.write;
-  const secondaryOn = S.mode==='read' ? st.write : st.read;
-  if(primaryOn && secondaryOn) return 'both';
-  if(primaryOn) return 'primary';
-  if(secondaryOn) return 'secondary';
-  return '';
+  return primaryOn ? 'primary' : '';
 }
 
 /* 현재 모드(읽기 또는 필사)의 활동만 독립적으로 켜짐/꺼짐 토글.
