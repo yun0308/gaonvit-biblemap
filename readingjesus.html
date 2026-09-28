@@ -89,6 +89,17 @@
     font-weight:700;
     text-transform:uppercase;
   }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-decoration:none;
+    margin-bottom:14px;
+  }
+  .back-link:active{ opacity:.6; }
   h1{
     font-size:clamp(24px,4vw,31px);
     font-weight:700;
@@ -416,6 +427,7 @@
 <div class="wrap">
 
   <header class="page">
+    <a class="back-link" href="index.html">← 바이블맵으로 돌아가기</a>
     <div class="eyebrow">Reading Jesus · 리딩지저스</div>
     <h1>리딩지저스 재생목록 &amp; 수록 영상</h1>
     <p>웨스트민스터코리아 «리딩지저스» 유튜브 채널의 오디오 바이블(일별 낭독)과 해설영상(41편)을 창세기부터 요한계시록까지 성경 66권 기준으로 정리했습니다. 책을 펼치면 그 책에 속한 영상이 나오고, 각 항목을 클릭하면 해당 영상으로 이동합니다.</p>
@@ -609,5 +621,38 @@
 </script>
 
 
+
+
+<script>
+/* 홈 화면에 추가한 경우에도 새 버전을 자동으로 받도록 확인 */
+(function(){
+  var BUILD_VERSION = "2026-09-28-1";
+  function checkForUpdate(){
+    fetch('version.json?_=' + Date.now(), { cache: 'no-store' })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){
+        if(!data || !data.version || data.version === BUILD_VERSION) return;
+
+        // 같은 버전으로 이미 한 번 새로고침을 시도했다면 다시 시도하지 않음(무한 새로고침 방지)
+        var attempted = '';
+        try{ attempted = sessionStorage.getItem('rj_update_attempt') || ''; }catch(e){}
+        if(attempted === data.version) return;
+        try{ sessionStorage.setItem('rj_update_attempt', data.version); }catch(e){}
+
+        var url = new URL(location.href);
+        url.searchParams.set('_v', data.version);
+        location.replace(url.toString());
+      })
+      .catch(function(){});
+  }
+  checkForUpdate();
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible') checkForUpdate();
+  });
+  window.addEventListener('pageshow', function(e){
+    if(e.persisted) checkForUpdate();
+  });
+})();
+</script>
 </body>
 </html>
