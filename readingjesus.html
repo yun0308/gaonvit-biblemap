@@ -89,17 +89,17 @@
     font-weight:700;
     text-transform:uppercase;
   }
-  .back-link{
+  nav.jump a.back-link{
     display:inline-flex;
     align-items:center;
     gap:5px;
-    font-size:12.5px;
-    font-weight:600;
-    color:var(--ink-soft);
-    text-decoration:none;
-    margin-bottom:14px;
+    color:var(--bg);
+    background:var(--navy);
+    font-weight:700;
+    box-shadow:0 2px 6px rgba(0,0,0,.18);
   }
-  .back-link:active{ opacity:.6; }
+  nav.jump a.back-link svg{ width:11px; height:11px; flex:none; }
+  nav.jump .jump-break{ flex-basis:100%; width:0; height:0; margin:0; padding:0; }
   h1{
     font-size:clamp(24px,4vw,31px);
     font-weight:700;
@@ -427,7 +427,6 @@
 <div class="wrap">
 
   <header class="page">
-    <a class="back-link" href="index.html">← 바이블맵으로 돌아가기</a>
     <div class="eyebrow">Reading Jesus · 리딩지저스</div>
     <h1>리딩지저스 재생목록 &amp; 수록 영상</h1>
     <p>웨스트민스터코리아 «리딩지저스» 유튜브 채널의 오디오 바이블(일별 낭독)과 해설영상(41편)을 창세기부터 요한계시록까지 성경 66권 기준으로 정리했습니다. 책을 펼치면 그 책에 속한 영상이 나오고, 각 항목을 클릭하면 해당 영상으로 이동합니다.</p>
@@ -444,6 +443,8 @@
   </header>
 
   <nav class="jump">
+    <a class="back-link" id="back-link" href="index.html"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>닫기</a>
+    <span class="jump-break" aria-hidden="true"></span>
     <a href="#sec-books">성경 66권 (해설영상 + 오디오 바이블)</a>
     <a href="#sec-full">전체듣기(구약·신약)</a>
   </nav>
@@ -626,7 +627,7 @@
 <script>
 /* 홈 화면에 추가한 경우에도 새 버전을 자동으로 받도록 확인 */
 (function(){
-  var BUILD_VERSION = "2026-09-28-1";
+  var BUILD_VERSION = "2026-09-28-2";
   function checkForUpdate(){
     fetch('version.json?_=' + Date.now(), { cache: 'no-store' })
       .then(function(r){ return r.ok ? r.json() : null; })
@@ -651,6 +652,28 @@
   });
   window.addEventListener('pageshow', function(e){
     if(e.persisted) checkForUpdate();
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var backLink = document.getElementById('back-link');
+  if(!backLink) return;
+  backLink.addEventListener('click', function(e){
+    e.preventDefault();
+    // 이 페이지로 들어온 경로가 같은 사이트(바이블맵) 내부 링크였고
+    // 실제로 되돌아갈 이력이 있을 때만 브라우저 "뒤로가기"를 사용합니다.
+    // 그렇지 않으면(직접 열었거나 딥링크로 들어온 경우) 뒤로가기가 빈 화면(about:blank)으로
+    // 빠질 수 있어서, 이 경우엔 안전하게 바로 바이블맵으로 이동합니다.
+    try{
+      if(document.referrer && history.length > 1 &&
+         new URL(document.referrer).origin === location.origin){
+        history.back();
+        return;
+      }
+    }catch(err){}
+    location.href = 'index.html';
   });
 })();
 </script>
