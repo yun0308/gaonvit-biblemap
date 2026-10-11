@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Guide · 성경 읽기·필사 지도</title>
 
-<!-- 카톡/문자 등 링크 미리보기용 (Open Graph) -->
 <meta property="og:title" content="가온빛교회 바이블맵 (성경읽기필사지도)">
 <meta property="og:description" content="성경 읽기·필사 진도를 기록하고, 관련 설교와 함께 말씀을 더 깊이 묵상해보세요.">
 <meta property="og:image" content="https://yun0308.github.io/gaonvit-biblemap/assets/logo.png">
@@ -13,7 +12,6 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 
-<!-- 홈 화면 바로가기 아이콘 -->
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -149,10 +147,12 @@ footer .app-link b{color:var(--navy)}
   <a href="#s2">2. 지도 화면 살펴보기</a>
   <a href="#s3">3. 장(章) 체크하기</a>
   <a href="#s4">4. 권 전체 체크 · 설교 영상</a>
-  <a href="#s5">5. 다른 기기에서 이어보기 · 초기화</a>
-  <a href="#s6">6. 자주 묻는 질문</a>
+  <a href="#s5">5. 리딩지저스 연결</a>
+  <a href="#s6">6. 다른 기기에서 이어보기 · 초기화</a>
+  <a href="#s7">7. 자주 묻는 질문</a>
 </nav>
 
+<!-- ===== §1 시작하기 ===== -->
 <section id="s1">
   <h2><span class="num">1</span>시작하기</h2>
   <p class="lead">처음 접속하면 가장 먼저 보이는 로그인 화면입니다.</p>
@@ -167,6 +167,7 @@ footer .app-link b{color:var(--navy)}
     <li><span class="n">4</span><span>성경을 고릅니다 — 구약 또는 신약</span></li>
     <li><span class="n">5</span><span>[시작]을 누르면 지도 화면으로 이동합니다</span></li>
   </ol>
+
   <div class="box">
     <span class="lbl">왜 이름과 생일이 필요한가요?</span>
     동명이인이 있어도 진도가 섞이지 않게 하는 구분 값입니다. 비밀번호가 아니며, 같은 값을 다시 입력하면 언제 어디서든 진도를 이어볼 수 있습니다.
@@ -177,51 +178,78 @@ footer .app-link b{color:var(--navy)}
   </div>
 </section>
 
+<!-- ===== §2 지도 화면 살펴보기 ===== -->
 <section id="s2">
   <h2><span class="num">2</span>지도 화면 살펴보기</h2>
-  <p class="lead">로그인 후 보이는 화면입니다. 실제 사용 화면입니다.</p>
+  <p class="lead">로그인 후 보이는 화면입니다.</p>
 
   <img class="shot" src="guide_shots/read_saved.png" alt="지도 화면 - 읽기지도">
   <p class="shot-cap">신약성경 읽기지도 예시</p>
 
   <ul class="bullets">
-    <li><b>저장 중… / 저장됨</b> — 왼쪽 위 표시. 체크한 내용이 서버에 잘 전달됐는지 알려줍니다</li>
-    <li><b>구약 바로가기 · 도움말 · 처음화면으로</b> — 오른쪽 위 링크 3개. 지금 보고 있는 성경의 반대쪽으로 바로 이동하거나, 이 도움말을 열거나, 로그인 화면으로 돌아갑니다</li>
+    <li><b>저장 중… / 저장됨</b> — 화면 오른쪽 아래에 고정 표시됩니다. 체크한 내용이 서버에 잘 전달됐는지 알려줍니다</li>
+    <li><b>구약 바로가기 · 도움말 · 처음화면으로</b> — 상단 가운데 링크 3개. 지금 보고 있는 성경의 반대쪽으로 바로 이동하거나, 이 도움말을 열거나, 로그인 화면으로 돌아갑니다</li>
     <li><b>통계 카드 4개</b> — 전체 진도(%), 완료한 장, 전체 장 수, 연결된 설교 편수</li>
-    <li><b>범례</b> — 각 색상이 무엇을 뜻하는지 설명</li>
-    <li><b>책 목록</b> — 소분류(사복음서·사도행전 / 바울서신 등)로 묶여서 권별로 나열</li>
+    <li><b>범례</b> — 읽기완료 · 설교 있는 장 · 리딩지저스의 색상과 아이콘을 설명합니다</li>
+    <li><b>책 목록</b> — 소분류(사복음서·사도행전 / 바울서신 등)로 묶여서 권별로 나열됩니다</li>
   </ul>
 </section>
 
+<!-- ===== §3 장 체크하기 ===== -->
 <section id="s3">
   <h2><span class="num">3</span>장(章) 체크하기</h2>
   <p class="lead">각 권 카드 안의 숫자 칸을 눌러 진도를 표시합니다.</p>
+
+  <img class="shot" src="guide_shots/book_card.jpg" alt="권 카드 — 범례, 장 그리드, 아이콘">
+  <p class="shot-cap">권 카드 구성 — 범례(위), 장 그리드(아래)</p>
+
   <div class="box">
     <span class="lbl">읽기와 필사는 서로 완전히 독립적입니다</span>
     "읽기지도"에서 장을 누르면 읽기 상태만 바뀌고, 필사 기록에는 전혀 영향을 주지 않습니다.
   </div>
+
   <table class="legend">
-    <tr><td><span class="swatch" style="background:#1B2A4A"></span></td><td><b>읽기완료</b> — 읽기지도에서 진하게 채워진 칸</td></tr>
-    <tr><td><span class="swatch" style="background:#F5F1E6;border:2.5px solid #A9B4C6"></span></td><td><b>필사만 완료</b> — 옅은 테두리로만 표시</td></tr>
-    <tr><td><span class="swatch" style="background:#1B2A4A;border:3px solid #C9A961"></span></td><td><b>둘 다 완료</b> — 읽기와 필사를 모두 마친 장</td></tr>
-    <tr><td><span class="swatch" style="background:#F5F1E6;border:1px solid #E4DECF;position:relative"><span style="position:absolute;top:-5px;right:-5px;width:10px;height:10px;border-radius:50%;background:#1B2A4A;display:inline-block"></span></span></td><td><b>점 표시</b> — 그 장에 연결된 설교가 있다는 뜻</td></tr>
+    <tr>
+      <td><span class="swatch" style="background:#1B2A4A"></span></td>
+      <td><b>읽기완료</b> — 읽기지도에서 진하게 채워진 칸 (네이비)</td>
+    </tr>
+    <tr>
+      <td><span class="swatch" style="background:#C9A961"></span></td>
+      <td><b>필사완료</b> — 필사지도에서 진하게 채워진 칸 (골드)</td>
+    </tr>
+    <tr>
+      <td>
+        <span class="swatch" style="background:#F5F1E6;border:1.5px solid #E4DECF;position:relative;display:inline-block;">
+          <span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#1B2A4A;display:inline-block"></span>
+        </span>
+      </td>
+      <td><b>점 표시</b> — 그 장에 연결된 가온빛교회 설교가 있다는 뜻</td>
+    </tr>
   </table>
 
-  <img class="shot" src="guide_shots/write_mode.png" alt="필사지도 예시 - 색이 반대로 적용됨">
-  <p class="shot-cap">필사지도로 들어가면 색이 반대로 — 필사완료가 골드로 진하게 채워집니다</p>
+  <img class="shot" src="guide_shots/write_mode.png" alt="필사지도 예시">
+  <p class="shot-cap">필사지도로 들어가면 완료된 장이 골드로 채워집니다</p>
 
-  <div class="box gold">필사지도에서는 필사완료가 진하게, 읽기만 완료는 옅은 테두리로 표시됩니다. 읽기지도와 정반대입니다.</div>
+  <div class="box gold">필사지도에서는 필사완료가 골드로 진하게, 읽기지도에서는 읽기완료가 네이비로 진하게 표시됩니다. 두 활동의 기록은 항상 함께 남아 있고, 지도 화면에서는 지금 선택한 활동의 상태만 강조해서 보여줍니다.</div>
+
+  <div class="box">
+    <span class="lbl">권 카드 접기 / 펼치기</span>
+    각 권 이름 오른쪽 끝의 ∨ 버튼을 누르면 해당 권의 장 그리드와 설교 목록을 접거나 펼칠 수 있습니다. 접힌 상태는 앱을 다시 열어도 유지됩니다.
+  </div>
 </section>
 
+<!-- ===== §4 권 전체 체크 · 설교 영상 ===== -->
 <section id="s4">
   <h2><span class="num">4</span>권 전체 체크 · 설교 영상</h2>
   <p class="lead">한 권을 처음부터 끝까지 다 읽었다면 장을 하나씩 누를 필요가 없습니다.</p>
+
   <ol class="steps">
     <li><span class="n">1</span><span>권 이름 바로 옆의 작은 체크박스를 누릅니다</span></li>
-    <li><span class="n">2</span><span>그 권의 모든 장이 지금 활동 기준으로 한번에 완료 처리됩니다</span></li>
-    <li><span class="n">3</span><span>다시 누르면 그 활동만 전체 초기화됩니다 (반대 활동은 유지)</span></li>
+    <li><span class="n">2</span><span>그 권의 모든 장이 지금 활동(읽기 또는 필사) 기준으로 한번에 완료 처리됩니다</span></li>
+    <li><span class="n">3</span><span>다시 누르면 그 활동만 전체 초기화됩니다 (반대 활동 기록은 유지됩니다)</span></li>
   </ol>
-  <p class="lead" style="margin-top:28px">각 권 카드 아래쪽엔 그 권과 관련된 설교 목록이 나옵니다 (위 스크린샷에도 보입니다).</p>
+
+  <p class="lead" style="margin-top:28px">각 권 카드 아래쪽엔 그 권과 관련된 가온빛교회 설교 목록이 나옵니다.</p>
   <ul class="bullets">
     <li>제목 왼쪽 배지(예: "5장")는 그 설교가 다루는 본문 범위입니다</li>
     <li>제목 오른쪽에는 설교자 이름이 표시됩니다</li>
@@ -229,8 +257,32 @@ footer .app-link b{color:var(--navy)}
   </ul>
 </section>
 
+<!-- ===== §5 리딩지저스 연결 ===== -->
 <section id="s5">
-  <h2><span class="num">5</span>다른 기기에서 이어보기 · 초기화</h2>
+  <h2><span class="num">5</span>리딩지저스 연결</h2>
+  <p class="lead">각 권 이름 옆의 책 아이콘(🔖)을 누르면 리딩지저스 해설·오디오 목록으로 이동합니다.</p>
+
+  <img class="shot" src="guide_shots/readingjesus.jpg" alt="리딩지저스 재생목록 화면">
+  <p class="shot-cap">리딩지저스 재생목록 — 해설영상과 오디오 바이블이 권별로 정리되어 있습니다</p>
+
+  <ul class="bullets">
+    <li><b>해설영상</b> — 어두운 배경으로 강조된 항목. 웨스트민스터코리아 리딩지저스 채널의 일러스트 스토리텔링 강의입니다</li>
+    <li><b>오디오 바이블</b> — 일별 낭독 파일. 해당 장 범위를 읽어주는 오디오입니다</li>
+    <li>항목을 누르면 해당 유튜브 영상으로 이동합니다</li>
+    <li>문서 아이콘(□)이 있는 항목은 가온빛교회 게시판의 원고 자료와 연결되어 있습니다</li>
+    <li>화면 위쪽 <b>[닫기]</b> 버튼을 누르면 지도 화면으로 돌아옵니다</li>
+  </ul>
+
+  <div class="box gold">
+    <span class="lbl">어느 장을 읽고 있는지 모를 때</span>
+    지금 읽고 있는 권의 책 아이콘을 눌러 해설영상을 먼저 보면 본문의 흐름을 파악하는 데 도움이 됩니다.
+  </div>
+</section>
+
+<!-- ===== §6 다른 기기에서 이어보기 · 초기화 ===== -->
+<section id="s6">
+  <h2><span class="num">6</span>다른 기기에서 이어보기 · 초기화</h2>
+
   <div class="box">
     같은 주소로 접속해서 <b>똑같은 이름과 생일</b>을 입력하기만 하면 됩니다. 진도는 기기가 아니라 이름+생일 기준으로 저장됩니다.
   </div>
@@ -238,6 +290,7 @@ footer .app-link b{color:var(--navy)}
     <span class="lbl">주의</span>
     이름·생일을 하나라도 다르게 입력하면 새로운 사람으로 인식되어 진도가 안 보입니다.
   </div>
+
   <p class="lead" style="margin-top:28px">화면 맨 아래 [진도 초기화] 버튼을 누르면 지금 보고 있는 활동의 진도가 전부 지워집니다.</p>
   <div class="box navy">
     <span class="lbl">되돌릴 수 없습니다</span>
@@ -245,8 +298,9 @@ footer .app-link b{color:var(--navy)}
   </div>
 </section>
 
-<section id="s6">
-  <h2><span class="num">6</span>자주 묻는 질문</h2>
+<!-- ===== §7 자주 묻는 질문 ===== -->
+<section id="s7">
+  <h2><span class="num">7</span>자주 묻는 질문</h2>
 
   <div class="faq-q"><span class="qm">Q.</span>이름을 안 넣고 시작했는데 진도가 사라졌어요.</div>
   <div class="faq-a">둘러보기 모드는 애초에 저장이 안 됩니다. [처음화면으로]에서 이름을 넣고 다시 시작해주세요.</div>
@@ -259,6 +313,12 @@ footer .app-link b{color:var(--navy)}
 
   <div class="faq-q"><span class="qm">Q.</span>예전에 필사했던 기록이 읽기 화면에서 옅게 보여요. 지워질까요?</div>
   <div class="faq-a">아닙니다. 읽기 화면에서는 읽기만 조작되므로 필사 기록은 안전하게 유지됩니다.</div>
+
+  <div class="faq-q"><span class="qm">Q.</span>권 전체 체크를 눌렀더니 기존에 개별로 체크한 것도 바뀌었어요.</div>
+  <div class="faq-a">권 전체 체크박스는 해당 권의 모든 장을 현재 활동 기준으로 한번에 덮어씁니다. 개별 체크와 권 전체 체크는 같은 데이터를 다루기 때문입니다.</div>
+
+  <div class="faq-q"><span class="qm">Q.</span>리딩지저스 아이콘을 눌렀는데 다시 지도로 돌아오려면 어떻게 하나요?</div>
+  <div class="faq-a">리딩지저스 화면 상단의 [닫기] 버튼을 누르면 바로 이전 지도 화면으로 돌아옵니다.</div>
 </section>
 
 <div class="closing">
