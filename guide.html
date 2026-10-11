@@ -198,19 +198,27 @@ footer .app-link b{color:var(--navy)}
 <!-- ===== §3 장 체크하기 ===== -->
 <section id="s3">
   <h2><span class="num">3</span>장(章) 체크하기</h2>
-  <p class="lead">각 권 카드 안의 숫자 칸을 눌러 진도를 표시합니다. 누르면 채워지고, 다시 누르면 취소됩니다.</p>
+  <p class="lead">권 카드 안의 숫자를 눌러 장별 진도를 기록합니다.</p>
 
-  <img class="shot" src="guide_shots/book_card.png" alt="지도 화면 — 통계 카드, 범례, 권 카드, 설교 목록">
-  <p class="shot-cap">구약성경 읽기지도 — 1·2·3장 완료 상태 (네이비), 설교 목록 포함</p>
+  <img class="shot" src="guide_shots/book_card.png" alt="구약성경 읽기지도 — 창세기 1·2·3장 완료 상태">
+  <p class="shot-cap">읽기지도 예시 — 완료한 장은 네이비로 채워지고, 설교 목록이 카드 아래에 표시됩니다</p>
+
+  <ul class="bullets">
+    <li>장 번호를 <b>한 번 누르면 완료</b>, 다시 누르면 취소됩니다</li>
+    <li>장 번호 위의 <b>작은 점</b>은 그 장에 연결된 가온빛교회 설교가 있다는 표시입니다</li>
+    <li>권 이름 옆 <b>체크박스(□)</b>는 그 권 전체를 한번에 완료 처리합니다 (§4 참고)</li>
+    <li>권 이름 옆 <b>📖 아이콘</b>을 누르면 리딩지저스 해설영상·오디오 목록으로 이동합니다 (§5 참고)</li>
+    <li>오른쪽 끝 <b>∨ 버튼</b>을 누르면 장 그리드와 설교 목록을 접거나 펼칩니다. 접힌 상태는 앱을 다시 열어도 유지됩니다</li>
+  </ul>
 
   <table class="legend">
     <tr>
       <td><span class="swatch" style="background:#1B2A4A"></span></td>
-      <td><b>읽기완료</b> — 읽기지도에서 진하게 채워진 칸 (네이비)</td>
+      <td><b>읽기완료</b> — 읽기지도에서 완료된 장 (네이비)</td>
     </tr>
     <tr>
       <td><span class="swatch" style="background:#C9A961"></span></td>
-      <td><b>필사완료</b> — 필사지도에서 진하게 채워진 칸 (골드)</td>
+      <td><b>필사완료</b> — 필사지도에서 완료된 장 (골드)</td>
     </tr>
     <tr>
       <td>
@@ -218,22 +226,13 @@ footer .app-link b{color:var(--navy)}
           <span style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#1B2A4A;display:inline-block"></span>
         </span>
       </td>
-      <td><b>점 표시</b> — 그 장에 연결된 가온빛교회 설교가 있다는 뜻</td>
-    </tr>
-    <tr>
-      <td><span style="font-size:1.1em">📖</span></td>
-      <td><b>리딩지저스</b> — 권 이름 옆 아이콘. 누르면 해설영상·오디오 목록으로 이동</td>
+      <td><b>점 표시</b> — 연결된 설교가 있는 장</td>
     </tr>
   </table>
 
   <div class="box">
     <span class="lbl">읽기와 필사는 서로 완전히 독립적입니다</span>
-    "읽기지도"에서 장을 누르면 읽기 상태만 바뀌고, 필사 기록에는 전혀 영향을 주지 않습니다. 두 활동의 기록은 항상 함께 남아 있고, 지도 화면에서는 지금 선택한 활동의 상태만 강조해서 보여줍니다.
-  </div>
-
-  <div class="box">
-    <span class="lbl">권 카드 접기 / 펼치기</span>
-    각 권 이름 오른쪽 끝의 ∨ 버튼을 누르면 장 그리드와 설교 목록을 접거나 펼칠 수 있습니다. 접힌 상태는 앱을 다시 열어도 유지됩니다.
+    읽기지도에서 장을 체크해도 필사 기록에는 전혀 영향을 주지 않습니다. 두 활동의 기록은 항상 함께 저장되며, 화면에서는 지금 선택한 활동의 상태만 강조해서 보여줍니다.
   </div>
 </section>
 
