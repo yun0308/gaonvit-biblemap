@@ -304,6 +304,10 @@ body.mode-write .ch[data-s="primary"]{background:var(--gold);border-color:var(--
 }
 .sermon-t{flex:1;min-width:0;color:var(--ink,#2C2C2A);word-break:keep-all;overflow-wrap:break-word}
 .sermon:active .sermon-t{text-decoration:underline}
+.sermon-d{
+  flex:none;margin-right:1px;color:var(--navy-soft);font-size:10.5px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;opacity:.8;
+}
 .sermon-p{
   flex:0 0 auto;max-width:88px;color:var(--navy-soft);font-size:11.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -1024,6 +1028,7 @@ function renderBooks(){
             return `<a class="sermon" href="${s.youtube_url}" target="_blank" rel="noopener">
               <span class="badge">${range}</span>
               <span class="sermon-t">${esc(s.title)}</span>
+              ${s.date?`<span class="sermon-d">${esc(String(s.date).replace(/-/g,'').slice(2))}</span>`:''}
               <span class="sermon-p">${esc(s.preacher||'')}</span>
             </a>`;
           }).join('') + `</div>`;
@@ -1207,7 +1212,7 @@ function toast(msg){
      다르면 자동으로 최신 버전을 다시 불러옵니다.
    ============================================================ */
 (function(){
-  var BUILD_VERSION = "2026-09-28-1";
+  var BUILD_VERSION = "2026-11-06-1";
 
   function checkForUpdate(){
     // 대기 중인 저장(동기화)이 있으면 화면을 새로고침하지 않고 다음 기회에 다시 확인
